@@ -1,13 +1,14 @@
 package typeclass
 
-trait Applicative[F[_]] {
-  def functor: Functor[F]
-
+trait Applicative[F[_]] extends Functor[F]{
   def pure[A](a: A): F[A]
   def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
 
+  def map[A, B](fa: F[A])(f: A => B): F[B] =
+    ap(pure(f), fa)
+
   def map2[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] =
-    ap(functor.map(fa)((a: A) => (b: B) => f(a, b)), fb)
+    ap(map(fa)((a: A) => (b: B) => f(a, b)), fb)
 
   def map3[A, B, C, D](fa: F[A], fb: F[B], fc: F[C])(f: (A, B, C) => D): F[D] =
     ap(map2(fa, fb)((a, b) => (c: C) => f(a, b, c)), fc)
@@ -58,7 +59,7 @@ case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
 
   def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =
     forAll((fa: F[A], f: A => B) =>
-      F.ap(F.pure(f), fa) == F.functor.map(fa)(f)
+      F.ap(F.pure(f), fa) == F.map(fa)(f)
     )
 
   def all(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]) =

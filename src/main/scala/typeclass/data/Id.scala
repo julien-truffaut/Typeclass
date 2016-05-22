@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.{Applicative, Functor}
+import typeclass.Monad
 
 import scalaprops.Gen
 
@@ -10,16 +10,8 @@ object Id {
   implicit def gen[A](implicit genA: Gen[A]): Gen[Id[A]] =
     genA.map(Id(_))
 
-  implicit val functor: Functor[Id] = new Functor[Id] {
-    def map[A, B](fa: Id[A])(f: A => B): Id[B] = Id(f(fa.value))
-  }
-
-  implicit val applicative: Applicative[Id] = new Applicative[Id] {
-    def functor: Functor[Id] = Functor[Id]
-
+  implicit val monad: Monad[Id] = new Monad[Id] {
     def pure[A](a: A): Id[A] = Id(a)
-
-    def ap[A, B](fab: Id[A => B], fa: Id[A]): Id[B] =
-      Id(fab.value(fa.value))
+    def flatMap[A, B](fa: Id[A])(f: A => Id[B]): Id[B] = f(fa.value)
   }
 }

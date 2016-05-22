@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.{Applicative, Functor}
+import typeclass.Monad
 
 import scalaprops.Gen
 
@@ -44,23 +44,11 @@ object ConsList {
   def nil[A]: ConsList[A] = Nil()
   def cons[A](head: A, tail: ConsList[A]): ConsList[A] = Cons(head, tail)
 
-  implicit val functor: Functor[ConsList] = new Functor[ConsList] {
-    def map[A, B](fa: ConsList[A])(f: A => B): ConsList[B] =
-      fa match {
-        case Nil()      => Nil()
-        case Cons(h, t) => Cons(f(h), map(t)(f))
-      }
-  }
-
-  implicit val applicative: Applicative[ConsList] = new Applicative[ConsList] {
-    def functor: Functor[ConsList] = Functor[ConsList]
-
+  implicit val monad: Monad[ConsList] = new Monad[ConsList] {
     def pure[A](a: A): ConsList[A] = Cons(a, nil)
 
-    def ap[A, B](fab: ConsList[A => B], fa: ConsList[A]): ConsList[B] =
-      fab.foldRight(nil[B])((f, acc) =>
-        fa.foldRight(nil[B])((a, acc2) => cons(f(a), acc2)) ++ acc
-      )
+   def flatMap[A, B](fa: ConsList[A])(f: A => ConsList[B]): ConsList[B] =
+     fa.foldRight(nil[B])((a, acc) => f(a) ++ acc)
   }
 
   implicit def gen[A: Gen]: Gen[ConsList[A]] =

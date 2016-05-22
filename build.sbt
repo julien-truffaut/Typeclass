@@ -6,6 +6,7 @@ scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-feature",
   "-language:higherKinds",
+  "-language:implicitConversions",
   "-unchecked",
   "-Xfatal-warnings",
   "-Xlint",

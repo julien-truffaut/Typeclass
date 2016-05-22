@@ -9,4 +9,8 @@ object FunctorTest extends Scalaprops {
   val id = FunctorLaws[Id].all
   val consList = FunctorLaws[ConsList].all
 
+  // check syntax compile
+  import typeclass.syntax.functor._
+  Id(3).map(_ + 1)
+
 }

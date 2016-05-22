@@ -11,6 +11,6 @@ object FunctorTest extends Scalaprops {
 
   // check syntax compile
   import typeclass.syntax.functor._
-  Id(3).map(_ + 1)
+  Id(3).map(_ + 1) // Id(4)
 
 }

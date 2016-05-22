@@ -9,7 +9,7 @@ trait Functor[F[_]] {
 }
 
 object Functor {
-  /** syntax to summon an Functor instance using Functor[Foo] instead of implicitly[Functor[Foo]] */
+  /** syntax to summon a Functor instance using Functor[Foo] instead of implicitly[Functor[Foo]] */
   def apply[F[_]](implicit ev: Functor[F]): Functor[F] = ev
 }
 

@@ -4,7 +4,7 @@ import typeclass.Functor
 
 object functor {
   /** pimp F[A] with all methods of FunctorOps if F as an instance of Functor */
-  implicit def ops[F[_], A](fa: F[A])(implicit F: Functor[F]): FunctorOps[F, A] = new FunctorOps(fa)
+  implicit def functorOps[F[_], A](fa: F[A])(implicit F: Functor[F]): FunctorOps[F, A] = new FunctorOps(fa)
 }
 
 class FunctorOps[F[_], A](fa: F[A])(implicit F: Functor[F]){

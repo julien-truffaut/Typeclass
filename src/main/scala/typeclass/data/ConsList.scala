@@ -6,7 +6,7 @@ import scalaprops.Gen
 
 sealed trait ConsList[A] {
   import ConsList._
-  
+
 //  @tailrec
 //  final def foldLeft[B](z: B)(f: (B, A) => B): B = this match {
 //    case Nil()      => z

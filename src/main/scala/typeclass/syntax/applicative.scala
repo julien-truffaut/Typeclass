@@ -4,8 +4,8 @@ import typeclass.Applicative
 
 object applicative {
   /** pimp F[A] with all methods of ApplicativeOps if F as an instance of Applicative */
-  implicit def ops[F[_], A](fa: F[A])(implicit F: Applicative[F]): ApplicativeOps[F, A] = new ApplicativeOps(fa)
-  implicit def ops2[A](a: A): Applicative2Ops[A] = new Applicative2Ops(a)
+  implicit def applicativeOps[F[_], A](fa: F[A])(implicit F: Applicative[F]): ApplicativeOps[F, A] = new ApplicativeOps(fa)
+  implicit def applicativeOps2[A](a: A): Applicative2Ops[A] = new Applicative2Ops(a)
 }
 
 class ApplicativeOps[F[_], A](fa: F[A])(implicit F: Applicative[F]){

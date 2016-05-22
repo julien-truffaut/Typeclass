@@ -1,7 +1,5 @@
 package typeclass
 
-
-
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
 
@@ -11,12 +9,12 @@ trait Functor[F[_]] {
 }
 
 object Functor {
-
+  /** syntax to summon an Functor instance using Functor[Foo] instead of implicitly[Functor[Foo]] */
+  def apply[F[_]](implicit ev: Functor[F]): Functor[F] = ev
 }
 
-
+/** All functor instance must respect the following laws */
 case class FunctorLaws[F[_]](implicit F: Functor[F]) {
-
   import scalaprops.Property.forAll
   import scalaprops.Properties.properties
   import scalaprops.Gen
@@ -35,5 +33,4 @@ case class FunctorLaws[F[_]](implicit F: Functor[F]) {
       "mapId"     -> mapId[Int],
       "mapFusion" -> mapFusion[Int, Int, Int]
     )
-
 }

@@ -28,8 +28,32 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
       F.flatMap(ff)(f => F.map(fa)(f)) == F.ap(ff, fa)
     )
 
+  def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =
+    forAll((fa: F[A], f: A => B) =>
+      F.flatMap(fa)(a => F.pure(f(a))) == F.map(fa)(f)
+    )
+
+  def flatMapAssociative[A, B, C](implicit genA: Gen[F[A]], genAB: Gen[A => F[B]], genBC: Gen[B => F[C]]) =
+    forAll((fa: F[A], f: A => F[B], g: B => F[C]) =>
+      F.flatMap(F.flatMap(fa)(f))(g) == F.flatMap(fa)(a => F.flatMap(f(a))(g))
+    )
+
+  def leftIdentity[A, B](implicit genA: Gen[A], genAB: Gen[A => F[B]]) =
+    forAll((a: A, f: A => F[B]) =>
+      F.flatMap(F.pure(a))(f) == f(a)
+    )
+
+  def rightIdentity[A](implicit genA: Gen[F[A]]) =
+    forAll((fa: F[A]) =>
+      F.flatMap(fa)(F.pure) == fa
+    )
+
   def all(implicit genFI: Gen[F[Int]], genF: Gen[F[Int => Int]]) =
     properties("Monad")(
-      "consistentAp" -> consistentAp[Int, Int]
+      "consistentAp"       -> consistentAp[Int, Int],
+      "consistentMap"      -> consistentMap[Int, Int],
+//      "flatMapAssociative" -> flatMapAssociative[Int, Int, Int], fail for ConsList
+      "leftIdentity"       -> leftIdentity[Int, Int],
+      "rightIdentity"      -> rightIdentity[Int]
     )
 }

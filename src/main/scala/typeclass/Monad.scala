@@ -1,5 +1,7 @@
 package typeclass
 
+import scalaprops.Properties
+
 trait Monad[F[_]] extends Applicative[F]{
   def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
 
@@ -48,7 +50,7 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
       F.flatMap(fa)(F.pure) == fa
     )
 
-  def all(implicit genFI: Gen[F[Int]], genF: Gen[F[Int => Int]]) =
+  def laws(implicit genFI: Gen[F[Int]], genFFI: Gen[F[Int => Int]]): Properties[String] =
     properties("Monad")(
       "consistentAp"       -> consistentAp[Int, Int],
       "consistentMap"      -> consistentMap[Int, Int],
@@ -56,4 +58,8 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
       "leftIdentity"       -> leftIdentity[Int, Int],
       "rightIdentity"      -> rightIdentity[Int]
     )
+
+  def all(implicit genFI: Gen[F[Int]], genFFI: Gen[F[Int => Int]]): Properties[String] =
+    Properties.fromProps("Monad-all", ApplicativeLaws[F].all, laws)
+
 }

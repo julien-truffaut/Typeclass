@@ -1,5 +1,7 @@
 package typeclass
 
+import scalaprops.Properties
+
 trait Applicative[F[_]] extends Functor[F]{
   def pure[A](a: A): F[A]
   def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
@@ -62,10 +64,13 @@ case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
       F.ap(F.pure(f), fa) == F.map(fa)(f)
     )
 
-  def all(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]) =
+  def laws(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]): Properties[String] =
     properties("Applicative")(
       "liftFunction"  -> liftFunction[Int, Int],
       "apId"          -> apId[Int],
       "consistentMap" -> consistentMap[Int, Int]
     )
+
+  def all(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]): Properties[String] =
+    Properties.fromProps("Applicative-all", FunctorLaws[F].all, laws)
 }

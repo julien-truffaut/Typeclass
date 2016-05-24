@@ -1,6 +1,6 @@
 package typeclass
 
-import typeclass.data.ConsList
+import typeclass.data.{Id, ConsList}
 import typeclass.data.ConsList._
 import typeclass.syntax.functor._
 import typeclass.syntax.applicative._
@@ -16,5 +16,8 @@ object Example extends App {
   println(list.foldLeft(0)(_ + _))
   println(1.pure[ConsList])
   println(list.flatMap(i => cons(i-1, cons(i+1, nil))))
+
+
+  println(Id(Id(1)).flatten)
 
 }

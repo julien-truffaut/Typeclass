@@ -15,17 +15,18 @@ object Functor {
 
 /** All functor instance must respect the following laws */
 case class FunctorLaws[F[_]](implicit F: Functor[F]) {
-  import scalaprops.Property.forAll
-  import scalaprops.Properties.properties
+  import typeclass.syntax.functor._
   import scalaprops.Gen
+  import scalaprops.Properties.properties
+  import scalaprops.Property.forAll
   import scalaz.std.string._
 
   def mapId[A](implicit genFA: Gen[F[A]]) =
-    forAll((fa: F[A]) => F.map(fa)(identity) == fa)
+    forAll((fa: F[A]) => fa.map(identity) == fa)
 
   def mapFusion[A, B, C](implicit genFA: Gen[F[A]], genAB: Gen[A => B], genBC: Gen[B => C]) =
     forAll((fa: F[A], f: A => B, g: B => C) =>
-      F.map(F.map(fa)(f))(g) == F.map(fa)(g compose f)
+      fa.map(f).map(g)== fa.map(g compose f)
     )
 
   def all(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]) =

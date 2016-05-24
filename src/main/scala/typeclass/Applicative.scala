@@ -44,14 +44,16 @@ object Applicative {
 
 /** All Applicative instance must respect the following laws */
 case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
-  import scalaprops.Property.forAll
-  import scalaprops.Properties.properties
+  import typeclass.syntax.applicative._
+  import typeclass.syntax.functor._
   import scalaprops.Gen
+  import scalaprops.Properties.properties
+  import scalaprops.Property.forAll
   import scalaz.std.string._
 
   def liftFunction[A, B](implicit genA: Gen[A], genAB: Gen[A => B]) =
     forAll((a: A, f: A => B) =>
-      F.ap(F.pure(f), F.pure(a)) == F.pure(f(a))
+      F.ap(f.pure, a.pure) == f(a).pure
     )
 
   def apId[A](implicit genFA: Gen[F[A]]) =
@@ -61,7 +63,7 @@ case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
 
   def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =
     forAll((fa: F[A], f: A => B) =>
-      F.ap(F.pure(f), fa) == F.map(fa)(f)
+      F.ap(f.pure, fa) == fa.map(f)
     )
 
   def laws(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]): Properties[String] =

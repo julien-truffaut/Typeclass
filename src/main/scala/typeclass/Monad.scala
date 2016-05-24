@@ -20,34 +20,37 @@ object Monad {
 
 /** All Monad instance must respect the following laws */
 case class MonadLaws[F[_]](implicit F: Monad[F]) {
-  import scalaprops.Property.forAll
-  import scalaprops.Properties.properties
+  import typeclass.syntax.applicative._
+  import typeclass.syntax.functor._
+  import typeclass.syntax.monad._
   import scalaprops.Gen
+  import scalaprops.Properties.properties
+  import scalaprops.Property.forAll
   import scalaz.std.string._
 
   def consistentAp[A, B](implicit genA: Gen[F[A]], genAB: Gen[F[A => B]]) =
     forAll((ff: F[A => B], fa: F[A]) =>
-      F.flatMap(ff)(f => F.map(fa)(f)) == F.ap(ff, fa)
+      ff.flatMap(f => fa.map(f)) == F.ap(ff, fa)
     )
 
   def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =
     forAll((fa: F[A], f: A => B) =>
-      F.flatMap(fa)(a => F.pure(f(a))) == F.map(fa)(f)
+      fa.flatMap(a => f(a).pure) == fa.map(f)
     )
 
   def flatMapAssociative[A, B, C](implicit genA: Gen[F[A]], genAB: Gen[A => F[B]], genBC: Gen[B => F[C]]) =
     forAll((fa: F[A], f: A => F[B], g: B => F[C]) =>
-      F.flatMap(F.flatMap(fa)(f))(g) == F.flatMap(fa)(a => F.flatMap(f(a))(g))
+      fa.flatMap(f).flatMap(g) == fa.flatMap(a => f(a).flatMap(g))
     )
 
   def leftIdentity[A, B](implicit genA: Gen[A], genAB: Gen[A => F[B]]) =
     forAll((a: A, f: A => F[B]) =>
-      F.flatMap(F.pure(a))(f) == f(a)
+      a.pure.flatMap(f) == f(a)
     )
 
   def rightIdentity[A](implicit genA: Gen[F[A]]) =
     forAll((fa: F[A]) =>
-      F.flatMap(fa)(F.pure) == fa
+      fa.flatMap(_.pure) == fa
     )
 
   def laws(implicit genFI: Gen[F[Int]], genFFI: Gen[F[Int => Int]]): Properties[String] =

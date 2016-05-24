@@ -6,6 +6,6 @@ import scalaprops.Scalaprops
 
 object ConstTest extends Scalaprops {
 
-  val functor = FunctorLaws[Const[Int, ?]].all
+  val functor = FunctorLaws[Const[Boolean, ?]].all
 
 }

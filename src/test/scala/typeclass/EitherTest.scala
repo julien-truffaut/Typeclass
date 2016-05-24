@@ -6,6 +6,6 @@ import scalaprops.Scalaprops
 
 object EitherTest extends Scalaprops {
 
-  val monad = MonadLaws[Either[Int, ?]].all
+  val monad = MonadLaws[Either[Boolean, ?]].all
 
 }

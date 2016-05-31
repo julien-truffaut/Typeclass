@@ -56,17 +56,17 @@ case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
 
   def liftFunction[A, B](implicit genA: Gen[A], genAB: Gen[A => B]) =
     forAll((a: A, f: A => B) =>
-      F.ap(f.pure, a.pure) == f(a).pure
+      f.pure.ap(a.pure) == f(a).pure
     )
 
   def apId[A](implicit genFA: Gen[F[A]]) =
     forAll((fa: F[A]) =>
-      F.ap(F.pure(identity[A](_)), fa) == fa
+      F.pure(identity[A](_)).ap(fa) == fa
     )
 
   def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =
     forAll((fa: F[A], f: A => B) =>
-      F.ap(f.pure, fa) == fa.map(f)
+      f.pure.ap(fa) == fa.map(f)
     )
 
   def laws(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]): Properties[String] =

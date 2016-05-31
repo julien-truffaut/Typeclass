@@ -1,11 +1,11 @@
 package typeclass
 
-import typeclass.data.{ConsList, Const}
+import typeclass.data.{Const, List}
 
 import scalaprops.Scalaprops
 
 object ConstTest extends Scalaprops {
 
-  val applicative = ApplicativeLaws[Const[ConsList[Int], ?]].all
+  val applicative = ApplicativeLaws[Const[List[Int], ?]].all
 
 }

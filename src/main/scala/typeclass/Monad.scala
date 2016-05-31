@@ -60,7 +60,7 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
     properties("Monad")(
       ("consistentAp"       , consistentAp[Int, Int]),
       ("consistentMap"      , consistentMap[Int, Int]),
-//      ("flatMapAssociative", flatMapAssociative[Int, Int, Int]), fail for ConsList
+      ("flatMapAssociative" , flatMapAssociative[Int, Int, Int]),
       ("leftIdentity"       , leftIdentity[Int, Int]),
       ("rightIdentity"      , rightIdentity[Int])
     )

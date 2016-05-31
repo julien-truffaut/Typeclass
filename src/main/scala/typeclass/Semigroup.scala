@@ -21,5 +21,5 @@ case class SemigroupLaws[A](implicit A: Semigroup[A]) {
     forAll((x: A, y: A, z: A) => x.combine(y).combine(z) == x.combine(y.combine(z)))
 
   def all(implicit genA: Gen[A]) =
-    properties("Semigroup")("associative" -> associative)
+    properties("Semigroup")(("associative", associative))
 }

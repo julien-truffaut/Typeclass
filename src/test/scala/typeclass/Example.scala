@@ -1,11 +1,13 @@
 package typeclass
 
-import typeclass.data.{Id, List}
+import scala.App
 import typeclass.data.List._
-import typeclass.syntax.functor._
+import typeclass.data.{Id, List}
+import typeclass.Prelude._
 import typeclass.syntax.applicative._
-import typeclass.syntax.semigroup._
+import typeclass.syntax.functor._
 import typeclass.syntax.monad._
+import typeclass.syntax.semigroup._
 
 object Example extends App {
 

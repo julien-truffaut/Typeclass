@@ -1,5 +1,6 @@
 package typeclass
 
+import typeclass.Prelude._
 import typeclass.data.Either
 
 import scalaprops.Scalaprops

@@ -1,5 +1,7 @@
 package typeclass
 
+import typeclass.Prelude._
+
 import scalaprops.Properties
 
 trait Monoid[A] extends Semigroup[A] {
@@ -14,6 +16,7 @@ object Monoid {
 /** All Monoid instance must respect the following laws */
 case class MonoidLaws[A](implicit A: Monoid[A]) {
   import typeclass.syntax.semigroup._
+
   import scalaprops.Gen
   import scalaprops.Properties.properties
   import scalaprops.Property.forAll
@@ -27,8 +30,8 @@ case class MonoidLaws[A](implicit A: Monoid[A]) {
 
   def laws(implicit genA: Gen[A]) =
     properties("Monoid")(
-      "leftIdentity"  -> leftIdentity,
-      "rightIdentity" -> rightIdentity
+      ("leftIdentity" , leftIdentity),
+      ("rightIdentity", rightIdentity)
     )
 
   def all(implicit genA: Gen[A]): Properties[String] =

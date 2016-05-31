@@ -1,6 +1,7 @@
 package typeclass.syntax
 
 import typeclass.Monad
+import typeclass.Prelude._
 
 object monad {
   /** pimp F[A] with all methods of MonadOps if F has an instance of Monad */

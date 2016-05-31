@@ -1,5 +1,7 @@
 package typeclass
 
+import typeclass.Prelude._
+
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
 
@@ -31,7 +33,7 @@ case class FunctorLaws[F[_]](implicit F: Functor[F]) {
 
   def all(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]) =
     properties("Functor")(
-      "mapId"     -> mapId[Int],
-      "mapFusion" -> mapFusion[Int, Int, Int]
+      ("mapId"    , mapId[Int]),
+      ("mapFusion", mapFusion[Int, Int, Int])
     )
 }

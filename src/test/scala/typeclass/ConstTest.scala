@@ -1,5 +1,6 @@
 package typeclass
 
+import typeclass.Prelude._
 import typeclass.data.{Const, List}
 
 import scalaprops.Scalaprops

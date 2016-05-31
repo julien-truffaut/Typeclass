@@ -1,5 +1,7 @@
 package typeclass
 
+import typeclass.Prelude._
+
 import scalaprops.Properties
 
 trait Monad[F[_]] extends Applicative[F]{
@@ -23,6 +25,7 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
   import typeclass.syntax.applicative._
   import typeclass.syntax.functor._
   import typeclass.syntax.monad._
+
   import scalaprops.Gen
   import scalaprops.Properties.properties
   import scalaprops.Property.forAll
@@ -55,11 +58,11 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
 
   def laws(implicit genFI: Gen[F[Int]], genFFI: Gen[F[Int => Int]]): Properties[String] =
     properties("Monad")(
-      "consistentAp"       -> consistentAp[Int, Int],
-      "consistentMap"      -> consistentMap[Int, Int],
-//      "flatMapAssociative" -> flatMapAssociative[Int, Int, Int], fail for ConsList
-      "leftIdentity"       -> leftIdentity[Int, Int],
-      "rightIdentity"      -> rightIdentity[Int]
+      ("consistentAp"       , consistentAp[Int, Int]),
+      ("consistentMap"      , consistentMap[Int, Int]),
+//      ("flatMapAssociative", flatMapAssociative[Int, Int, Int]), fail for ConsList
+      ("leftIdentity"       , leftIdentity[Int, Int]),
+      ("rightIdentity"      , rightIdentity[Int])
     )
 
   def all(implicit genFI: Gen[F[Int]], genFFI: Gen[F[Int => Int]]): Properties[String] =

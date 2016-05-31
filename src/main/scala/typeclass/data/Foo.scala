@@ -1,6 +1,7 @@
 package typeclass.data
 
 import typeclass.Functor
+import typeclass.Prelude._
 
 import scalaprops.Gen
 

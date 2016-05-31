@@ -1,6 +1,7 @@
 package typeclass.syntax
 
 import typeclass.Functor
+import typeclass.Prelude._
 
 object functor {
   /** pimp F[A] with all methods of FunctorOps if F has an instance of Functor */

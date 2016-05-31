@@ -3,7 +3,7 @@ package typeclass.syntax
 import typeclass.Functor
 
 object functor {
-  /** pimp F[A] with all methods of FunctorOps if F as an instance of Functor */
+  /** pimp F[A] with all methods of FunctorOps if F has an instance of Functor */
   implicit def functorOps[F[_], A](fa: F[A])(implicit F: Functor[F]): FunctorOps[F, A] = new FunctorOps(fa)
 }
 

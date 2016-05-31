@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.Monad
+import typeclass.{Semigroup, Monad}
 
 import scalaprops.Gen
 
@@ -33,8 +33,9 @@ sealed trait ConsList[A] {
   final def reverse: ConsList[A] =
     foldLeft(nil[A])((acc, a) => cons(a, acc))
 
+  /** alias for combine */
   final def ++(other: ConsList[A]): ConsList[A] =
-    foldRight(other)(cons)
+    Semigroup[ConsList[A]].combine(this, other)
 }
 
 object ConsList {
@@ -49,6 +50,11 @@ object ConsList {
 
    def flatMap[A, B](fa: ConsList[A])(f: A => ConsList[B]): ConsList[B] =
      fa.foldRight(nil[B])((a, acc) => f(a) ++ acc)
+  }
+
+  implicit def semigroup[A]: Semigroup[ConsList[A]] = new Semigroup[ConsList[A]] {
+    def combine(x: ConsList[A], y: ConsList[A]): ConsList[A] =
+      x.foldRight(y)(cons)
   }
 
   implicit def gen[A: Gen]: Gen[ConsList[A]] =

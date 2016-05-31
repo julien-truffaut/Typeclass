@@ -3,7 +3,7 @@ package typeclass.syntax
 import typeclass.Monad
 
 object monad {
-  /** pimp F[A] with all methods of MonadOps if F as an instance of Monad */
+  /** pimp F[A] with all methods of MonadOps if F has an instance of Monad */
   implicit def monadOps[F[_], A](fa: F[A])(implicit F: Monad[F]): MonadOps[F, A] = new MonadOps(fa)
 }
 

@@ -33,7 +33,7 @@ case class MonadLaws[F[_]](implicit F: Monad[F]) {
 
   def consistentAp[A, B](implicit genA: Gen[F[A]], genAB: Gen[F[A => B]]) =
     forAll((ff: F[A => B], fa: F[A]) =>
-      ff.flatMap(f => fa.map(f)) == F.ap(ff, fa)
+      ff.flatMap(f => fa.map(f)) == ff.ap(fa)
     )
 
   def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =

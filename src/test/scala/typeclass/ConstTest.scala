@@ -6,6 +6,6 @@ import scalaprops.Scalaprops
 
 object ConstTest extends Scalaprops {
 
-  val applicative = FunctorLaws[Const[ConsList[Int], ?]].all
+  val applicative = ApplicativeLaws[Const[ConsList[Int], ?]].all
 
 }

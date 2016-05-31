@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.{Semigroup, Monad}
+import typeclass.{Monoid, Semigroup, Monad}
 
 import scalaprops.Gen
 
@@ -52,9 +52,10 @@ object ConsList {
      fa.foldRight(nil[B])((a, acc) => f(a) ++ acc)
   }
 
-  implicit def semigroup[A]: Semigroup[ConsList[A]] = new Semigroup[ConsList[A]] {
+  implicit def monoid[A]: Monoid[ConsList[A]] = new Monoid[ConsList[A]] {
     def combine(x: ConsList[A], y: ConsList[A]): ConsList[A] =
       x.foldRight(y)(cons)
+    def empty: ConsList[A] = nil
   }
 
   implicit def gen[A: Gen]: Gen[ConsList[A]] =

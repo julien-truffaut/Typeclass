@@ -8,6 +8,7 @@ import typeclass.syntax.applicative._
 import typeclass.syntax.functor._
 import typeclass.syntax.monad._
 import typeclass.syntax.semigroup._
+import typeclass.syntax.foldable._
 
 object Example extends App {
 

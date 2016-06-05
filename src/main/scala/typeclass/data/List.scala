@@ -1,6 +1,8 @@
 package typeclass.data
 
-import typeclass.{Monad, Monoid, Semigroup}
+import typeclass.{Foldable, Monad, Monoid, Semigroup}
+import typeclass.syntax.applicative._
+import typeclass.syntax.foldable._
 
 import scala.annotation.tailrec
 import scalaprops.Gen
@@ -8,17 +10,11 @@ import scalaprops.Gen
 sealed trait List[A] {
   import List._
 
-  @tailrec
-  final def foldLeft[B](z: B)(f: (B, A) => B): B = this match {
-    case Nil()      => z
-    case Cons(h, t) => t.foldLeft(f(z, h))(f)
-  }
-
-  final def foldRight[B](z: B)(f: (A, B) => B): B =
-    reverse.foldLeft(z)((b, a) => f(a , b))
+  final def :+(a: A): List[A] = reverse.foldLeft(a.pure[List])((acc, a) => a +: acc)
+  final def +:(a: A): List[A] = cons(a, this)
 
   final def reverse: List[A] =
-    foldLeft(nil[A])((acc, a) => cons(a, acc))
+    this.foldLeft(nil[A])((acc, a) => cons(a, acc))
 
   /** alias for combine */
   final def ++(other: List[A]): List[A] =
@@ -36,13 +32,26 @@ object List {
     def pure[A](a: A): List[A] = Cons(a, nil)
 
    def flatMap[A, B](fa: List[A])(f: A => List[B]): List[B] =
-     fa.foldRight(nil[B])((a, acc) => f(a) ++ acc)
+     fa.reverse.foldLeft(nil[B])((acc, a) => f(a) ++ acc)
   }
 
   implicit def monoid[A]: Monoid[List[A]] = new Monoid[List[A]] {
     def combine(x: List[A], y: List[A]): List[A] =
-      x.foldRight(y)(cons)
+      x.reverse.foldLeft(y)((acc, a) => cons(a, acc))
     def empty: List[A] = nil
+  }
+
+  implicit val foldable: Foldable[List] = new Foldable[List] {
+    @tailrec
+    def foldLeft[A, B](fa: List[A], z: B)(f: (B, A) => B): B = fa match {
+      case Nil()      => z
+      case Cons(h, t) => foldLeft(t, f(z, h))(f)
+    }
+
+    def foldRight[A, B](fa: List[A], z: B)(f: (A, B) => B): B = fa match {
+      case Nil()      => z
+      case Cons(h, t) => f(h, foldRight(t, z)(f))
+    }
   }
 
   implicit def gen[A: Gen]: Gen[List[A]] =

@@ -12,6 +12,7 @@ object Prelude {
   type String = java.lang.String
 
   type <:<[-A, +B] = scala.Predef.<:<[A, B]
+  type Ordering[A] = scala.Ordering[A]
 
   def identity[A](a: A): A = a
   def println(x: Any) = scala.Console.println(x)

@@ -8,19 +8,19 @@ import scalaprops.Gen
 sealed trait Option[A] {
   import Option._
 
-  def cata[B](default: => B, f: A => B): B = this match {
+  def fold[B](default: => B, f: A => B): B = this match {
     case None()  => default
     case Some(a) => f(a)
   }
 
   def getOrElse(a: => A): A =
-    cata(a, identity)
+    fold(a, identity)
 
   def orElse(opt: => Option[A]): Option[A] =
-    cata(opt, some)
+    fold(opt, some)
 
   def toEither[E](e: => E): Either[E, A] =
-    cata(Either.left(e), Either.right)
+    fold(Either.left(e), Either.right)
 }
 
 object Option {
@@ -33,15 +33,15 @@ object Option {
   implicit val monad: Monad[Option] = new Monad[Option] {
     def pure[A](a: A): Option[A] = some(a)
     def flatMap[A, B](fa: Option[A])(f: A => Option[B]): Option[B] =
-      fa.cata(none, f)
+      fa.fold(none, f)
   }
 
   implicit val foldable: Foldable[Option] = new Foldable[Option] {
     def foldLeft[A, B](fa: Option[A], z: B)(f: (B, A) => B): B =
-      fa.cata(z, f(z, _))
+      fa.fold(z, f(z, _))
 
     def foldRight[A, B](fa: Option[A], z: B)(f: (A, B) => B): B =
-      fa.cata(z, f(_, z))
+      fa.fold(z, f(_, z))
   }
 
   implicit def gen[A: Gen]: Gen[Option[A]] =

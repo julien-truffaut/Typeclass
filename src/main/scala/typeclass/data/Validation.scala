@@ -7,7 +7,7 @@ import scalaprops.Gen
 sealed trait Validation[E, A] {
   import Validation._
 
-  def cata[B](f: E => B, g: A => B): B = this match {
+  def fold[B](f: E => B, g: A => B): B = this match {
     case Failure(e) => f(e)
     case Success(a) => g(a)
   }
@@ -33,10 +33,10 @@ object Validation {
 
   implicit def foldable[E]: Foldable[Validation[E, ?]] = new Foldable[Validation[E, ?]] {
     def foldLeft[A, B](fa: Validation[E, A], z: B)(f: (B, A) => B): B =
-      fa.cata(_ => z, f(z, _))
+      fa.fold(_ => z, f(z, _))
 
     def foldRight[A, B](fa: Validation[E, A], z: B)(f: (A, B) => B): B =
-      fa.cata(_ => z, f(_, z))
+      fa.fold(_ => z, f(_, z))
   }
 
   implicit def gen[E: Gen, A: Gen]: Gen[Validation[E, A]] =

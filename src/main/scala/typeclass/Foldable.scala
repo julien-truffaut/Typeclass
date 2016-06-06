@@ -24,7 +24,7 @@ trait Foldable[F[_]] {
     foldRight(fa, none[A])((a, acc) => acc.orElse(some(a)))
 
   def maximum[A](fa: F[A])(implicit A: Ordering[A]): Option[A] =
-    foldLeft(fa, none[A])((acc, a) => acc.cata(some(a), other =>
+    foldLeft(fa, none[A])((acc, a) => acc.fold(some(a), other =>
       if(A.gt(a, other)) some(a) else some(other)
     ))
 

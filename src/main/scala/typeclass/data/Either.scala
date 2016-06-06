@@ -7,7 +7,7 @@ import scalaprops.Gen
 sealed trait Either[E, A] {
   import Either._
 
-  def cata[B](f: E => B, g: A => B): B = this match {
+  def fold[B](f: E => B, g: A => B): B = this match {
     case Left(e)  => f(e)
     case Right(a) => g(a)
   }
@@ -23,15 +23,15 @@ object Either {
   implicit def monad[E]: Monad[Either[E, ?]] = new Monad[Either[E, ?]] {
     def pure[A](a: A): Either[E, A] = right(a)
     def flatMap[A, B](fa: Either[E, A])(f: A => Either[E, B]): Either[E, B] =
-      fa.cata(left, f)
+      fa.fold(left, f)
   }
 
   implicit def foldable[E]: Foldable[Either[E, ?]] = new Foldable[Either[E, ?]] {
     def foldLeft[A, B](fa: Either[E, A], z: B)(f: (B, A) => B): B =
-      fa.cata(_ => z, f(z, _))
+      fa.fold(_ => z, f(z, _))
 
     def foldRight[A, B](fa: Either[E, A], z: B)(f: (A, B) => B): B =
-      fa.cata(_ => z, f(_, z))
+      fa.fold(_ => z, f(_, z))
   }
 
   implicit def gen[E: Gen, A: Gen]: Gen[Either[E, A]] =

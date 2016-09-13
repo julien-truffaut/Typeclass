@@ -23,7 +23,7 @@ testFrameworks += new TestFramework("scalaprops.ScalapropsFramework")
 parallelExecution in Test := false
 
 libraryDependencies ++= Seq(
-  "com.github.scalaprops" %% "scalaprops" % "0.3.1"
+  "com.github.scalaprops" %% "scalaprops" % "0.3.4"
 )
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.7.1")
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.0")

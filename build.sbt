@@ -7,6 +7,7 @@ scalacOptions ++= Seq(
   "-feature",
   "-language:higherKinds",
   "-language:implicitConversions",
+  "-language:existentials",
   "-unchecked",
   "-Xfatal-warnings",
   "-Xlint",

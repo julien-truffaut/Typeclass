@@ -28,3 +28,7 @@ libraryDependencies ++= Seq(
 )
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.0")
+
+tutSettings
+tutSourceDirectory := baseDirectory.value / "tut"
+tutTargetDirectory := baseDirectory.value / "tut-out"

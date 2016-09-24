@@ -34,12 +34,178 @@ Julien Truffaut • `@JulienTruffaut`
 
 ---
 
+# What is ad hoc polymorphism?
+
+```tut:book
+1 + 2
+3.2 + 4.0
+
+List(1,2,3).map(_ + 1)
+Vector(1,2,3).map(_ + 1)
+```
+
+???
+- overloading a function
+- parametric polymorphism: `def take[A](xs: List[A]): List[A]`
+
+---
+
+# Inheritance: OOP implementation
+
+```tut:silent
+trait Input {
+  def setLabel(s: String): Input
+}
+case class Text(label: String, maxLength: Int) extends Input {
+  def setLabel(s: String): Input = copy(label = s)
+}
+case class Select(label: String, options: List[String]) extends Input {
+  def setLabel(s: String): Input = copy(label = s)
+}
+
+val text = Text("What is your name?", maxLength = 20)
+val select = Select("Favorite language?", List("scala", "haskell", "purescript"))
+```
+
+```tut:book
+text.setLabel("foo")
+select.setLabel("foo")
+```
+
+---
+
+# Inheritance: OOP implementation
+
+```tut:silent
+trait Input {
+  def setLabel(s: String): Input
+}
+case class Text(label: String, maxLength: Int) extends Input {
+  def setLabel(s: String): Input = copy(label = s)
+}
+case class Select(label: String, options: List[String]) extends Input {
+  def setLabel(s: String): Input = copy(label = s)
+}
+```
+
+```tut:fail
+def _setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
+```
+
+---
+
+# F-Bounded
+
+```tut:silent
+trait Input[A <: Input[A]] {
+  def setLabel(s: String): A
+}
+case class Text(label: String, maxLength: Int) extends Input[Text] {
+  def setLabel(s: String): Text = copy(label = s)
+}
+case class Select(label: String, options: List[String]) extends Input[Select] {
+  def setLabel(s: String): Select = copy(label = s)
+}
+
+def _setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
+```
+
+```tut:silent
+case class Radio(label: String, options: List[String]) extends Input[Text] {
+  def setLabel(s: String): Text = Text(s, 10) // WTF
+}
+```
+		   
+???
+- this technique is called F-bounded polymorphism
+
+---
+
+# Self type
+
+```tut:silent
+trait Input[A <: Input[A]] { self: A =>
+  def setLabel(s: String): A
+}
+case class Text(label: String, maxLength: Int) extends Input[Text] {
+  def setLabel(s: String): Text = copy(label = s)
+}
+case class Select(label: String, options: List[String]) extends Input[Select] {
+  def setLabel(s: String): Select = copy(label = s)
+}
+
+def _setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
+```
+
+```tut:fail
+case class Radio(label: String, options: List[String]) extends Input[Text] {
+  def setLabel(s: String): Text = Text(s, 10)
+}
+```
+
+---
+# Self type
+
+```tut:silent
+abstract class Radio(labe: String, options: List[String]) extends Input[Radio]
+
+case class YesNo(label: String) extends Radio(label, List("Yes", "No")) {
+  def setLabel(s: String): YesNo = copy(label = s)
+}
+
+case class Color(label: String) extends Radio(label, List("Red", "Blue", "Yellow")) {
+  def setLabel(s: String): YesNo = YesNo(label = s) // WTF
+}
+```
+
+???
+- `YesNo` and `Color` are both an `Input[Radio]` 
+- at this point, I give up with interitance
+
+---
+# Typeclass
+
+```tut:silent
+trait Label[A]{
+  def setLabel(a: A, s: String): A
+}
+
+object Label {
+  def apply[A](implicit ev: Label[A]): Label[A] = ev
+}
+
+final case class Text(label: String, maxLength: Int)		   
+final case class Select(label: String, options: List[String])
+
+implicit val label: Label[Text] = new Label[Text] {
+  def setLabel(a: Text, s: String): Text = a.copy(label = s)
+}
+
+implicit val label: Label[Select] = new Label[Select] {
+  def setLabel(a: Select, s: String): Select = a.copy(label = s)
+}		   
+```
+
+```tut:book
+val text = Text("What is your name?", maxLength = 20)
+//Label[Text].setLabel(text, "foo")
+//implicitly[Label[Text]].setLabel(text, "foo")
+```		   
+---
+
 class: center, middle
 
 # Thanks!
 Code and slides at `julien-truffaut/Typeclass` on GitHub
 
 ## Questions?
+
+---
+
+# References
+
+- [tut](https://github.com/tpolecat/tut), [remark.js](https://github.com/gnab/remark), tpolecat [presentation]((https://github.com/tpolecat/cofree/blob/master/tut/slides.html)) I copied from
+- [Returning the "Current" Type in Scala](https://tpolecat.github.io/2015/04/29/f-bounds.html) by tpolecat
 
 
 

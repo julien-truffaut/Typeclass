@@ -166,6 +166,9 @@ case class Color(label: String) extends Radio(label, List("Red", "Blue", "Yellow
 # Typeclass
 
 ```tut:silent
+final case class Text(label: String, maxLength: Int)		   
+final case class Select(label: String, options: List[String])
+
 trait Label[A]{
   def setLabel(a: A, s: String): A
 }
@@ -173,26 +176,40 @@ trait Label[A]{
 object Label {
   def apply[A](implicit ev: Label[A]): Label[A] = ev
 }
-
-final case class Text(label: String, maxLength: Int)		   
-final case class Select(label: String, options: List[String])
-
-implicit val label: Label[Text] = new Label[Text] {
+		   
+implicit val labelText: Label[Text] = new Label[Text] {
   def setLabel(a: Text, s: String): Text = a.copy(label = s)
 }
 
-implicit val label: Label[Select] = new Label[Select] {
+implicit val labelSelect: Label[Select] = new Label[Select] {
   def setLabel(a: Select, s: String): Select = a.copy(label = s)
 }		   
 ```
 
-```tut:book
+```tut:invisible
 val text = Text("What is your name?", maxLength = 20)
-//Label[Text].setLabel(text, "foo")
+val select = Select("Favorite language?", List("scala", "haskell", "purescript"))
+```
+		   
+```tut:book
 implicitly[Label[Text]].setLabel(text, "foo")
-```		   
+Label[Text].setLabel(text, "foo")
+```
 ---
+# Typeclass syntax
 
+```tut:silent
+implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
+  def setLabel(s: String): A = ev.setLabel(a, s)
+}
+```
+
+```tut:book
+text.setLabel("foo")
+select.setLabel("foo")
+```
+		   
+---
 class: center, middle
 
 # Thanks!

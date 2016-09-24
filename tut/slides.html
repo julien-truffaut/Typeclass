@@ -189,7 +189,7 @@ implicit val label: Label[Select] = new Label[Select] {
 ```tut:book
 val text = Text("What is your name?", maxLength = 20)
 //Label[Text].setLabel(text, "foo")
-//implicitly[Label[Text]].setLabel(text, "foo")
+implicitly[Label[Text]].setLabel(text, "foo")
 ```		   
 ---
 

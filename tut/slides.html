@@ -33,8 +33,26 @@ Julien Truffaut • `@JulienTruffaut`
 - notes here
 
 ---
+# Instructions
 
-# What is ad hoc polymorphism?
+
+Repository is on github `julien-truffaut/Typeclass`
+
+```
+git clone https://github.com/julien-truffaut/Typeclass.git
+
+cd Typeclass
+
+sbt clean test
+```
+
+???
+- all the code in the slides are compiled using tut
+- very few dependencies so it should be fast to download and compile
+
+---
+
+# Ad hoc polymorphism?
 
 ```tut:book
 1 + 2
@@ -163,52 +181,174 @@ case class Color(label: String) extends Radio(label, List("Red", "Blue", "Yellow
 - at this point, I give up with interitance
 
 ---
-# Typeclass
+# A typeclass definition in scala
+
+Typeclasses are not first class construct in scala but they generally require the following components:
+  
+1. typeclass is encoded as a `trait` with one or more type parameters
+2. instances of the typeclasses are encoded as `implicit` values of the `trait`
+3. syntax to extend all typeclass methods to types with an instance via an `implicit class`
+4. laws or properties to define invariants of the typeclass
+
+???
+- Typeclass are not a 1st class construct means they are derived from other constructs 
+- encoding is not unique, here I will present the most common one used in (scalaz, cats, argonaut, circe, etc ...) 
+---
+# Trait and companion object
 
 ```tut:silent
-final case class Text(label: String, maxLength: Int)		   
-final case class Select(label: String, options: List[String])
-
-trait Label[A]{
+trait Label[A] {
+  def getLabel(a: A): String
   def setLabel(a: A, s: String): A
 }
 
 object Label {
   def apply[A](implicit ev: Label[A]): Label[A] = ev
-}
-		   
-implicit val labelText: Label[Text] = new Label[Text] {
-  def setLabel(a: Text, s: String): Text = a.copy(label = s)
-}
-
-implicit val labelSelect: Label[Select] = new Label[Select] {
-  def setLabel(a: Select, s: String): Select = a.copy(label = s)
 }		   
 ```
+???
+- trait or abstract class
+- `apply` method is just a short cut to summon an instance, `Label[Text]` instead of `implicitly[Label[Text]]`
+---
+# Instances
 
-```tut:invisible
-val text = Text("What is your name?", maxLength = 20)
-val select = Select("Favorite language?", List("scala", "haskell", "purescript"))
+```tut:silent
+implicit val labelText: Label[Text] = new Label[Text] {
+  def getLabel(a: Text): String = a.label
+  def setLabel(a: Text, s: String): Text = a.copy(label = s)
+}
 ```
-		   
+
+Instances should be located in:
+- companion object of the typeclass (e.g. `Label`) or		   
+- companion object of the type (e.g. `Text`)
+
 ```tut:book
-implicitly[Label[Text]].setLabel(text, "foo")
+val text = Text("What is your name?", maxLength = 20)
+		   
+implicitly[Label[Text]].getLabel(text)
+
+Label[Text].getLabel(text)
 Label[Text].setLabel(text, "foo")
 ```
+		   
 ---
-# Typeclass syntax
+# Syntax
 
 ```tut:silent
 implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
+  def getLabel: String = ev.getLabel(a)
   def setLabel(s: String): A = ev.setLabel(a, s)
 }
 ```
 
+Implicit class is generally located in the companion of the typeclass (e.g. `Label`)
+
 ```tut:book
+text.getLabel
 text.setLabel("foo")
-select.setLabel("foo")
 ```
+
+???
+- this pattern is often refer to pimp a class
+- typeclasses permit retroactive extension, i.e. extending types define somewhere else   
+
+---
+# Laws
+
+```tut:silent
+import scalaprops.{Gen, Properties}
+import scalaprops.Properties.properties
+import scalaprops.Property
+import scalaprops.Property.forAll		   
+import scalaz.std.string._
+
+case class LabelLaws[A](implicit A: Label[A]) {
+  
+  def getSet(implicit genA: Gen[A]): Property  =
+    forAll((a: A) => a.setLabel(a.getLabel) == a)
+
+  def setGet(implicit genA: Gen[A], genString: Gen[String]): Property  =
+    forAll((a: A, s: String) => a.setLabel(s).getLabel == s)
+
+  def all(implicit genA: Gen[A], genString: Gen[String]): Properties[String] =
+    properties("Label")(
+     ("getSet", getSet),
+     ("setGet", setGet))
+}
+```
+???
+- there are more freedom regarding location of laws, some people like to have it in the same file or same module than the typeclass but it requires to add `Scalacheck` or `scalaprop` to your main dependencies. Other people prefer to define them in a separate module or in test
+
+---
+# Laws
+
+```tut:silent
+import scalaprops.Scalaprops
+
+object TextTest extends Scalaprops {
+  implicit val genString: Gen[String] = Gen.asciiString
+
+  implicit val genText: Gen[Text] = for {
+    l <- Gen.asciiString
+    i <- Gen.choose(1, 100)
+  } yield Text(l, i)
+	 
+  val label = LabelLaws[Text].all
+}		 
+```
+
+---
+# Typeclass + Instance
+
+```tut:silent
+trait Label[A] {
+  def getLabel(a: A): String
+  def setLabel(a: A, s: String): A
+}; object Label {
+  def apply[A](implicit ev: Label[A]): Label[A] = ev
+
+  implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
+    def getLabel: String = ev.getLabel(a)
+    def setLabel(s: String): A = ev.setLabel(a, s)
+  }
+}
+
+case class Text(label: String, maxLength: Int); object Text {
+  implicit val label: Label[Text] = new Label[Text]{
+    def getLabel(a: Text): String = a.label
+    def setLabel(a: Text, s: String): Text = a.copy(label = s)
+  }
+}
+```
+
+---
+# Reduce boiler plate with simulacrum
+
+```tut:silent
+import simulacrum._
+
+@typeclass trait Label2[A]{
+  def getLabel2(a: A): String
+  def setLabel2(a: A, s: String): A
+}
 		   
+implicit val label2Text: Label2[Text] = new Label2[Text] {
+  def getLabel2(a: Text): String = a.label
+  def setLabel2(a: Text, s: String): Text = a.copy(label = s)
+}
+```
+
+```tut:invisible
+val text = Text.apply("What is your name?", maxLength = 20)
+```
+
+```tut:book
+import Label2.ops._
+text.getLabel2
+text.setLabel2("foo")
+```  
+
 ---
 class: center, middle
 
@@ -222,8 +362,8 @@ Code and slides at `julien-truffaut/Typeclass` on GitHub
 # References
 
 - [tut](https://github.com/tpolecat/tut), [remark.js](https://github.com/gnab/remark), tpolecat [presentation]((https://github.com/tpolecat/cofree/blob/master/tut/slides.html)) I copied from
-- [Returning the "Current" Type in Scala](https://tpolecat.github.io/2015/04/29/f-bounds.html) by tpolecat
-
+- [Returning the "Current" Type in Scala](https://tpolecat.github.io/2015/04/29/f-bounds.html) by Rob Norris
+- [Type Classes as Objects and Implicits](http://ropas.snu.ac.kr/~bruno/papers/TypeClasses.pdf) by Oliveira, Bruno; Adriaan Moors; Martin Odersky (2010)
 
 
 

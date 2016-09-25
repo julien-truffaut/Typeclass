@@ -23,7 +23,7 @@ object Bar {
   implicit def gen[A: Gen]: Gen[Bar[A]] = Gen.oneOf(
     Gen.elements(Bar0()),
     for {
-      i <- Gen.genIntAll
+      i <- Gen.choose(0, 100)
       a <- Gen[A]
     } yield Bar1(i, a),
     for {

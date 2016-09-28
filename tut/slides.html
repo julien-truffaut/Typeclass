@@ -348,7 +348,25 @@ import Label2.ops._
 text.getLabel2
 text.setLabel2("foo")
 ```  
+---
+# Exercices
 
+```tut:silent
+trait Semigroup[A] {
+  def combine(x: A, y: A): A
+}
+```
+
+1. Declare companion object with `apply` method
+2. Write a `SemigroupOps` implicit class to add syntax
+3. Write a `SemigroupLaws` with an associative law 
+4. Write a `Semigroup` instance for `String`, `Int`, `List[A]`   
+
+---
+# Implicit resolution
+
+TODO
+	 
 ---
 class: center, middle
 

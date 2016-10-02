@@ -359,8 +359,8 @@ trait Semigroup[A] {
 
 1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
 2. Implement associative law in `SemigroupLaws`
-3. Implement a `Semigroup` instance for `String`, `Int`, List[A] in `typeclass.std`
-4. Implement a `Semigroup` instance for our own `Option` in `typeclass.data.option`
+3. Implement a `Semigroup` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+4. Implement a `Semigroup` instance for `NonEmptyList[A]` in `typeclass.data`
 5. Implement a `Semigroup` instance for `Mult`, `First`, `Last` in `typeclass.data`
 	 
 run tests using: `sbt exercice/test`
@@ -386,12 +386,14 @@ trait Monoid[A] extends Semigroup[A] {
 1. Derive `isEmpty` and `ifEmpty` implementation from `empty`
 2. Write `MonoidOps` in typeclass.syntax.monoid`
 3. Implement left and right identity laws in `MonoidLaws`
-3. Implement a `Monoid` instance for `String`, `Int`, List[A] in `typeclass.std`
-4. Implement a `Monoid` instance for our own `Option` in `typeclass.data.option`
+3. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+4. Implement a `Monoid` instance for `NonEmptyList[A]` in `typeclass.data.option`
 5. Implement a `Monoid` instance for `Mult`, `First`, `Last` in `typeclass.data`
 
 ???
-	 
+- Monoid[NonEmptyList[A]] is impossible 
+
+		   
 ---
 # Implicit resolution
 

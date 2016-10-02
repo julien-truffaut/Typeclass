@@ -12,8 +12,6 @@ object Monoid {
   def apply[A](implicit ev: Monoid[A]): Monoid[A] = ev
 }
 
-
-/** All Monoid instance must respect the following laws */
 case class MonoidLaws[A](implicit A: Monoid[A]) {
   import typeclass.syntax.semigroup._
 

@@ -6,27 +6,10 @@ trait Semigroup[A] {
 
 object Semigroup {
   def apply[A](implicit ev: Semigroup[A]): Semigroup[A] = ev
-
-  object ops {
-    implicit class SemigroupOps[A](a: A)(implicit A: Semigroup[A]){
-      def combine(other: A): A = A.combine(a, other)
-    }
-  }
-
-  implicit val stringSemigroup: Semigroup[String] = new Semigroup[String] {
-    override def combine(x: String, y: String): String = x ++ y
-  }
-
-  implicit val intSemigroup: Semigroup[Int] = new Semigroup[Int] {
-    override def combine(x: Int, y: Int): Int = ???
-  }
-
-  implicit def listSemigroup[A]: Semigroup[List[A]] = ???
 }
 
-
 case class SemigroupLaws[A](implicit A: Semigroup[A]) {
-  import Semigroup.ops._
+  import typeclass.syntax.semigroup._
   import scalaprops.Properties.properties
   import scalaprops.Property.forAll
   import scalaprops.{Gen, Property}

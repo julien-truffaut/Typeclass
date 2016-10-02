@@ -1,7 +1,7 @@
-package typeclass
+package typeclass.data
 
 import typeclass.Prelude._
-import typeclass.data.Either
+import typeclass.{FoldableLaws, MonadLaws}
 
 import scalaprops.Scalaprops
 

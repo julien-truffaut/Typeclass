@@ -1,6 +1,6 @@
-package typeclass
+package typeclass.data
 
-import typeclass.data.Id
+import typeclass.{FoldableLaws, MonadLaws}
 
 import scalaprops.Scalaprops
 

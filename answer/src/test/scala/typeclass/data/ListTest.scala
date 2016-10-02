@@ -1,7 +1,7 @@
-package typeclass
+package typeclass.data
 
 import typeclass.Prelude._
-import typeclass.data.List
+import typeclass.{FoldableLaws, MonadLaws, MonoidLaws}
 
 import scalaprops.{Param, Scalaprops}
 

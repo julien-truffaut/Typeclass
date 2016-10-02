@@ -1,6 +1,6 @@
-package typeclass
+package typeclass.data
 
-import typeclass.data.Foo
+import typeclass.FunctorLaws
 
 import scalaprops.Scalaprops
 

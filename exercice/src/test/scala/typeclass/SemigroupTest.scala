@@ -1,5 +1,9 @@
 package typeclass
 
+import typeclass.std.int._
+import typeclass.std.list._
+import typeclass.std.string._
+
 import scalaprops.{Gen, Scalaprops}
 
 object SemigroupTest extends Scalaprops {

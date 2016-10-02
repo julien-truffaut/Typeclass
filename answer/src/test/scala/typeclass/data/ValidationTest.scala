@@ -1,7 +1,7 @@
-package typeclass
+package typeclass.data
 
 import typeclass.Prelude._
-import typeclass.data.{List, Validation}
+import typeclass.{ApplicativeLaws, FoldableLaws}
 
 import scalaprops.Scalaprops
 

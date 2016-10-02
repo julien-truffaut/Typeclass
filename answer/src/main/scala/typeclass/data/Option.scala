@@ -1,7 +1,7 @@
 package typeclass.data
 
 import typeclass.Prelude._
-import typeclass.{Foldable, Monad}
+import typeclass.{Foldable, Monad, Monoid, Semigroup}
 
 import scalaprops.Gen
 
@@ -43,6 +43,17 @@ object Option {
     def foldRight[A, B](fa: Option[A], z: B)(f: (A, B) => B): B =
       fa.fold(z, f(_, z))
   }
+
+  implicit def optionMonoid[A: Semigroup]: Monoid[Option[A]] = new Monoid[Option[A]] {
+    def empty: Option[A] = none
+    def combine(x: Option[A], y: Option[A]): Option[A] = (x, y) match {
+      case (None() , None())  => none
+      case (Some(a), None())  => some(a)
+      case (None() , Some(a)) => some(a)
+      case (Some(a), Some(b)) => some(Semigroup[A].combine(a, b))
+    }
+  }
+
 
   implicit def gen[A: Gen]: Gen[Option[A]] =
     Gen.frequency(

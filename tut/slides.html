@@ -357,10 +357,20 @@ trait Semigroup[A] {
 }
 ```
 
-1. Write a `SemigroupOps` implicit class to add syntax
-2. Write a `SemigroupLaws` with an associative law 
-3. Write a `Semigroup` instance for `String`, `Int`, `List[A]`   
+1. Implement `SemigroupOps` implicit class to add syntax (typeclass.syntax.semigroup)
+2. Implement associative law in `SemigroupLaws` (typeclass.Semigroup) 
+3. Implement a `Semigroup` instance for `String` (typeclass.std.string)
+4. Implement a `Semigroup` instance for `Int` (typeclass.std.int)
+5. Implement a `Semigroup` instance for `List[A]` (typeclass.std.list)
+6. Implement a `Semigroup` instance for our own `Option` (typeclass.data.option)
 
+run tests using: `sbt exercice/test`
+
+???
+- add syntax for semigroup using `import typeclass.syntax.semigroup._` (or `import scalaz.syntax.semigroup`)
+- add std instance in scope using `import typeclass.std.string._` (or `import scalaz.std.string`)
+- for your own data type, instances are in the companion object => no need of extra import
+	 
 ---
 # Implicit resolution
 

@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.{Foldable, Monad}
+import typeclass.Monad
 
 import scalaprops.Gen
 
@@ -15,10 +15,4 @@ object Id {
     def flatMap[A, B](fa: Id[A])(f: A => Id[B]): Id[B] = f(fa.value)
   }
 
-  implicit val foldable: Foldable[Id] = new Foldable[Id] {
-    def foldLeft[A, B](fa: Id[A], z: B)(f: (B, A) => B): B =
-      f(z, fa.value)
-    def foldRight[A, B](fa: Id[A], z: B)(f: (A, B) => B): B =
-      f(fa.value, z)
-  }
 }

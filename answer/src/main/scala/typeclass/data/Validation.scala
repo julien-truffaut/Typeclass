@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.{Applicative, Foldable, Semigroup}
+import typeclass.{Applicative, Semigroup}
 
 import scalaprops.Gen
 
@@ -29,14 +29,6 @@ object Validation {
         case (Success(_), Failure(e)) => Failure(e)
         case (Failure(x), Failure(y)) => Failure(E.combine(x, y))
       }
-  }
-
-  implicit def foldable[E]: Foldable[Validation[E, ?]] = new Foldable[Validation[E, ?]] {
-    def foldLeft[A, B](fa: Validation[E, A], z: B)(f: (B, A) => B): B =
-      fa.fold(_ => z, f(z, _))
-
-    def foldRight[A, B](fa: Validation[E, A], z: B)(f: (A, B) => B): B =
-      fa.fold(_ => z, f(_, z))
   }
 
   implicit def gen[E: Gen, A: Gen]: Gen[Validation[E, A]] =

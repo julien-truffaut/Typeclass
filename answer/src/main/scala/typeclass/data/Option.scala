@@ -1,7 +1,7 @@
 package typeclass.data
 
 import typeclass.Prelude._
-import typeclass.{Foldable, Monad, Monoid, Semigroup}
+import typeclass.{Monad, Monoid, Semigroup}
 
 import scalaprops.Gen
 
@@ -34,14 +34,6 @@ object Option {
     def pure[A](a: A): Option[A] = some(a)
     def flatMap[A, B](fa: Option[A])(f: A => Option[B]): Option[B] =
       fa.fold(none, f)
-  }
-
-  implicit val foldable: Foldable[Option] = new Foldable[Option] {
-    def foldLeft[A, B](fa: Option[A], z: B)(f: (B, A) => B): B =
-      fa.fold(z, f(z, _))
-
-    def foldRight[A, B](fa: Option[A], z: B)(f: (A, B) => B): B =
-      fa.fold(z, f(_, z))
   }
 
   implicit def optionMonoid[A: Semigroup]: Monoid[Option[A]] = new Monoid[Option[A]] {

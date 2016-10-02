@@ -1,6 +1,6 @@
 package typeclass.data
 
-import typeclass.{Foldable, Monad}
+import typeclass.Monad
 
 import scalaprops.Gen
 
@@ -24,14 +24,6 @@ object Either {
     def pure[A](a: A): Either[E, A] = right(a)
     def flatMap[A, B](fa: Either[E, A])(f: A => Either[E, B]): Either[E, B] =
       fa.fold(left, f)
-  }
-
-  implicit def foldable[E]: Foldable[Either[E, ?]] = new Foldable[Either[E, ?]] {
-    def foldLeft[A, B](fa: Either[E, A], z: B)(f: (B, A) => B): B =
-      fa.fold(_ => z, f(z, _))
-
-    def foldRight[A, B](fa: Either[E, A], z: B)(f: (A, B) => B): B =
-      fa.fold(_ => z, f(_, z))
   }
 
   implicit def gen[E: Gen, A: Gen]: Gen[Either[E, A]] =

@@ -323,6 +323,87 @@ case class Text(label: String, maxLength: Int); object Text {
 ```
 
 ---
+# Semigroup Exercices
+
+```tut:silent
+trait Semigroup[A] {
+  def combine(x: A, y: A): A
+}
+```
+
+1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
+2. Implement associative law in `SemigroupLaws`
+3. Implement a `Semigroup` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+4. Implement a `Semigroup` instance for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
+	 
+run tests using: `sbt exercice/test`
+
+???
+- `Semigroup[Int]` is not unique, `+` and `*`. Solution: newtype Mult
+- same for `String`: `s1 + s2` or `s2 + s1`
+- what about `Option`? `First`, `Last`
+
+---
+# Semigroup
+
+```tut:invisible
+import typeclass.data.{NonEmptyList, First, Last}
+```
+```tut:silent
+import typeclass.syntax.semigroup._
+```
+
+```tut
+NonEmptyList(1,2,3).combine(NonEmptyList(4, 5))
+First(Option(1)).combine(First(Option(2)))
+Last(Option(1)).combine(Last(Option(2)))
+```
+```tut:fail
+"Hello".combine(" World")
+```
+```tut:silent
+import typeclass.std.string._
+```
+
+```tut
+"Hello".combine(" World")
+```
+
+???
+- for your own data type, instances are in the companion object => no need of extra import
+
+---
+# Monoid Exercices
+
+```tut:silent
+trait Monoid[A] extends Semigroup[A] {
+  def empty: A
+
+  def isEmpty(a: A): Boolean = ???
+  def ifEmpty[B](a: A)(t: => B)(f: => B): B = ???
+}
+```
+
+1. Derive `isEmpty` and `ifEmpty` implementation from `empty`
+2. Write `MonoidOps` in `typeclass.syntax.monoid`
+3. Implement left and right identity laws in `MonoidLaws`
+3. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+4. Implement a `Monoid` instance for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
+
+???
+- `Monoid[NonEmptyList]` is impossible
+	
+---
+# Typeclass for higher kinded type
+
+TODO
+
+---
+# Implicit resolution
+
+TODO
+
+---
 # Reduce boiler plate with simulacrum
 
 ```tut:silent
@@ -347,89 +428,7 @@ val text = Text.apply("What is your name?", maxLength = 20)
 import Label2.ops._
 text.getLabel2
 text.setLabel2("foo")
-```  
----
-# Semigroup Exercices
-
-```tut:silent
-trait Semigroup[A] {
-  def combine(x: A, y: A): A
-}
 ```
-
-1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
-2. Implement associative law in `SemigroupLaws`
-3. Implement a `Semigroup` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
-4. Implement a `Semigroup` instance for `NonEmptyList[A]` in `typeclass.data`
-5. Implement a `Semigroup` instance for `Mult`, `First`, `Last` in `typeclass.data`
-	 
-run tests using: `sbt exercice/test`
-
-???
-- `Semigroup[Int]` is not unique, `+` and `*`. Solution: newtype Mult
-- same for `String`: `s1 + s2` or `s2 + s1`
-- what about `Option`? `First`, `Last`
-
----
-# Semigroup
-
-```tut:invisible
-import _root_.typeclass.data.{NonEmptyList, First, Last}
-```
-```tut:silent
-import _root_.typeclass.syntax.semigroup._
-```
-
-```tut
-NonEmptyList(1,2,3).combine(NonEmptyList(4, 5))
-First(Option(1)).combine(First(Option(2)))
-Last(Option(1)).combine(Last(Option(2)))
-```
-```tut:fail
-"Hello".combine(" World")
-```
-```tut:silent
-import _root_.typeclass.std.string._
-```
-
-```tut
-"Hello".combine(" World")
-```
-
-???
-- for your own data type, instances are in the companion object => no need of extra import
-	 
----
-# Monoid Exercices
-
-```tut:silent
-trait Monoid[A] extends Semigroup[A] {
-  def empty: A
-
-  def isEmpty(a: A): Boolean = ???
-  def ifEmpty[B](a: A)(t: => B)(f: => B): B = ???
-}
-```
-
-1. Derive `isEmpty` and `ifEmpty` implementation from `empty`
-2. Write `MonoidOps` in `typeclass.syntax.monoid`
-3. Implement left and right identity laws in `MonoidLaws`
-3. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
-4. Implement a `Monoid` instance for `NonEmptyList[A]` in `typeclass.data.option`
-5. Implement a `Monoid` instance for `Mult`, `First`, `Last` in `typeclass.data`
-
-???
-- `Monoid[NonEmptyList]` is impossible
-	
----
-# Typeclass for higher kinded type
-
-TODO
-
----
-# Implicit resolution
-
-TODO
 
 ---
 class: center, middle

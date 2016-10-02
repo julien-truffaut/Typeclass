@@ -1,6 +1,7 @@
 package typeclass.data
 
 import typeclass.SemigroupLaws
+import typeclass.std.option._
 
 import scalaprops.{Gen, Scalaprops}
 

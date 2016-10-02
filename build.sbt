@@ -23,29 +23,34 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
   ),
   addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
   addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.0")
-) ++ testSettings
+)
 
 lazy val typeclass = project.in(file("."))
   .settings(moduleName := "typeclass")
   .settings(baseSettings)
-  .settings(myTutSettings)
   .aggregate(answer, exercice)
   .dependsOn(answer, exercice)
 
 lazy val answer = project
   .settings(moduleName := "typeclass-answer")
   .settings(baseSettings)
+  .settings(testSettings)
 
 lazy val exercice = project
   .settings(moduleName := "typeclass-exercice")
   .settings(baseSettings)
+  .settings(testSettings)
+
+lazy val slides = project
+  .settings(moduleName := "typeclass-slides")
+  .settings(baseSettings)
+  .settings(tutSettings)
+  .settings(
+    tutSourceDirectory := baseDirectory.value / "tut",
+    tutTargetDirectory := baseDirectory.value / "tut-out"
+  ).dependsOn(answer)
 
 lazy val testSettings = Seq(
   testFrameworks += new TestFramework("scalaprops.ScalapropsFramework"),
   parallelExecution in Test := false
-)
-
-lazy val myTutSettings = tutSettings ++ Seq(
-  tutSourceDirectory := baseDirectory.value / "tut",
-  tutTargetDirectory := baseDirectory.value / "tut-out"
 )

@@ -1,5 +1,6 @@
 package typeclass.data
 
+import typeclass.std.option._
 import typeclass.std.string._
 import typeclass.{MonadLaws, MonoidLaws}
 

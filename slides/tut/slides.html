@@ -369,8 +369,36 @@ run tests using: `sbt exercice/test`
 - `Semigroup[Int]` is not unique, `+` and `*`. Solution: newtype Mult
 - same for `String`: `s1 + s2` or `s2 + s1`
 - what about `Option`? `First`, `Last`
-- for your own data type, instances are in the companion object => no need of extra import
 
+---
+# Semigroup
+
+```tut:invisible
+import _root_.typeclass.data.{NonEmptyList, First, Last}
+```
+```tut:silent
+import _root_.typeclass.syntax.semigroup._
+```
+
+```tut
+NonEmptyList(1,2,3).combine(NonEmptyList(4, 5))
+First(Option(1)).combine(First(Option(2)))
+Last(Option(1)).combine(Last(Option(2)))
+```
+```tut:fail
+"Hello".combine(" World")
+```
+```tut:silent
+import _root_.typeclass.std.string._
+```
+
+```tut
+"Hello".combine(" World")
+```
+
+???
+- for your own data type, instances are in the companion object => no need of extra import
+	 
 ---
 # Monoid Exercices
 
@@ -384,25 +412,25 @@ trait Monoid[A] extends Semigroup[A] {
 ```
 
 1. Derive `isEmpty` and `ifEmpty` implementation from `empty`
-2. Write `MonoidOps` in typeclass.syntax.monoid`
+2. Write `MonoidOps` in `typeclass.syntax.monoid`
 3. Implement left and right identity laws in `MonoidLaws`
 3. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
 4. Implement a `Monoid` instance for `NonEmptyList[A]` in `typeclass.data.option`
 5. Implement a `Monoid` instance for `Mult`, `First`, `Last` in `typeclass.data`
 
 ???
-- Monoid[NonEmptyList[A]] is impossible 
-		   
+- `Monoid[NonEmptyList]` is impossible
+	
 ---
 # Typeclass for higher kinded type
 
 TODO
-		   
+
 ---
 # Implicit resolution
 
 TODO
-	 
+
 ---
 class: center, middle
 

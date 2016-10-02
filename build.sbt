@@ -23,11 +23,12 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
   ),
   addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
   addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.0")
-) ++ testSettings ++ myTutSettings
+) ++ testSettings
 
 lazy val typeclass = project.in(file("."))
   .settings(moduleName := "typeclass")
   .settings(baseSettings)
+  .settings(myTutSettings)
   .aggregate(answer, exercice)
   .dependsOn(answer, exercice)
 

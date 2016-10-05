@@ -323,7 +323,7 @@ case class Text(label: String, maxLength: Int); object Text {
 ```
 
 ---
-# Semigroup Exercices
+# Semigroup exercices
 
 ```tut:silent
 trait Semigroup[A] {
@@ -334,7 +334,7 @@ trait Semigroup[A] {
 1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
 2. Implement associative law in `SemigroupLaws`
 3. Implement a `Semigroup` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
-4. Implement a `Semigroup` instance for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
+4. Implement a `Semigroup` instance for `NonEmptyList[A]` in `typeclass.data`
 	 
 run tests using: `sbt exercice/test`
 
@@ -344,6 +344,41 @@ run tests using: `sbt exercice/test`
 - what about `Option`? `First`, `Last`
 
 ---
+# Instance uniqueness
+
+
+```tut:silent
+implicit val additiveInt: Semigroup[Int] = new Semigroup[Int]{
+  def combine(x: Int, y: Int): Int = x + y
+}
+implicit val multiplicativeInt: Semigroup[Int] = new Semigroup[Int]{
+  def combine(x: Int, y: Int): Int = x * y
+}
+```
+
+```tut:fail
+implicitly[Semigroup[Int]]
+```
+---
+# Newtype
+
+```scala
+case class Mult(value: Int)
+implicit val multSemigroup: Semigroup[Mult] = new Semigroup[Mult]{
+  def combine(x: Mult, y: Mult): Mult =
+    Mult(x.value * y.value)	 
+}
+
+case class First[A](value: Option[A])
+case class Last[A](value: Option[A])
+
+implicit def firstSemigroup[A]: Semigroup[First[A]] = ???
+implicit def lastSemigroup[A] : Semigroup[Last[A]]  = ???
+```
+
+1. Implement a `Semigroup` instance for `First`, `Last` in `typeclass.data`
+	 
+---
 # Semigroup
 
 ```tut:invisible
@@ -351,10 +386,12 @@ import typeclass.data.{NonEmptyList, First, Last}
 ```
 ```tut:silent
 import typeclass.syntax.semigroup._
+import typeclass.std.int._
+import typeclass.std.option._
 ```
 
 ```tut
-NonEmptyList(1,2,3).combine(NonEmptyList(4, 5))
+Option(1).combine(Option(2))
 First(Option(1)).combine(First(Option(2)))
 Last(Option(1)).combine(Last(Option(2)))
 ```

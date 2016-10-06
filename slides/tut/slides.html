@@ -508,6 +508,27 @@ implicit def constFunctor[R]: Functor[Const[R, ?]] = new Functor[Const[R, ?]]{
 ???
 - Const has a phantom type	
 - ? comes from kind projector
+
+---
+# Context bound syntax
+
+```tut:invisible
+import typeclass.Semigroup
+```
+
+```tut:silent
+def plus3[A](a1: A, a2: A, a3: A)(implicit ev: Semigroup[A]): A =
+  ev.combine(ev.combine(a1, a2), a3)
+
+def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
+  Semigroup[A].combine(Semigroup[A].combine(a1, a2), a3)
+
+def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
+  a1.combine(a2).combine(a3)
+```
+
+???
+- parametricity
 	
 ---
 # Implicit resolution

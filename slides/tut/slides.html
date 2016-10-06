@@ -333,8 +333,8 @@ trait Semigroup[A] {
 
 1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
 2. Implement associative law in `SemigroupLaws`
-3. Implement a `Semigroup` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
-4. Implement a `Semigroup` instance for `NonEmptyList[A]` in `typeclass.data`
+3. Implement an instance of `Semigroup` for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+4. Implement an instance of `Semigroup` for `NonEmptyList[A]` in `typeclass.data`
 	 
 run tests using: `sbt exercice/test`
 
@@ -425,8 +425,8 @@ trait Monoid[A] extends Semigroup[A] {
 2. Write `MonoidOps` in `typeclass.syntax.monoid`
 3. Implement left identity law in `MonoidLaws`: `empty.combine(a) == a`
 4. Implement right identity law in `MonoidLaws`: `a.combine(empty) == a`
-5. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
-6. Implement a `Monoid` instance for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
+5. Implement an instance of `Monoid` for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+6. Implement an instance of `Monoid` for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
 
 ???
 - `Monoid[NonEmptyList]` is impossible
@@ -477,11 +477,37 @@ trait Functor[F[_]] {
 2. Write `FunctorOps` in `typeclass.syntax.functor`
 3. Implement map identity law in `FunctorLaws`: `fa.map(id) == fa`
 4. Implement map fusion law in `FunctorLaws`: `fa.map(f).map(g) == fa.map(g . f)`
-5. Implement a `Functor` instance for `List[A]`, `Option[A]` in `typeclass.std`
-6. Implement a `Functor` instance for `NonEmptyList[A]`, `Id` in `typeclass.data`
+5. Implement an instance of `Functor` for `List`, `Option` in `typeclass.std`
+6. Implement an instance of `Functor` for `NonEmptyList` in `typeclass.data`
 
 ???
 - for `Option` try not to reuse `map`
+
+---
+# Const
+
+```tut:silent
+case class Const[A, B](value: A){
+  def retag[C]: Const[A, C] = Const(value)
+}
+
+implicit def constFunctor[R]: Functor[({type λ[a] = Const[R, a]})#λ] =
+  new Functor[({type λ[a] = Const[R, a]})#λ]{
+    def map[A, B](fa: Const[R, A])(f: A => B): Const[R, B] = ???
+  }
+
+// or with kind-projector
+	
+implicit def constFunctor[R]: Functor[Const[R, ?]] = new Functor[Const[R, ?]]{
+  def map[A, B](fa: Const[R, A])(f: A => B): Const[R, B] = ???
+}
+```
+
+1. Implement an instance of `Functor` for `Const`
+
+???
+- Const has a phantom type	
+- ? comes from kind projector
 	
 ---
 # Implicit resolution

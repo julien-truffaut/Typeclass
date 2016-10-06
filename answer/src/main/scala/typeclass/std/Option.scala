@@ -16,7 +16,10 @@ object option {
 
   implicit val optionMonad: Monad[Option] = new Monad[Option] {
     def pure[A](a: A): Option[A] = Option(a)
-    def flatMap[A, B](fa: Option[A])(f: A => Option[B]): Option[B] = fa.flatMap(f)
+    def flatMap[A, B](fa: Option[A])(f: A => Option[B]): Option[B] = fa match {
+      case None    => None
+      case Some(a) => f(a)
+    }
   }
 
 }

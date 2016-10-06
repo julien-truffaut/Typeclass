@@ -5,7 +5,6 @@ import typeclass.Prelude._
 
 import scalaprops.Gen
 
-
 case class Foo[A](b: Boolean, i: Int, a: A)
 
 object Foo {

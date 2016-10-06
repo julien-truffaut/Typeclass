@@ -421,11 +421,12 @@ trait Monoid[A] extends Semigroup[A] {
 }
 ```
 
-1. Derive `isEmpty` and `ifEmpty` implementation from `empty`
+1. Derive `isEmpty` and `ifEmpty` from `empty`
 2. Write `MonoidOps` in `typeclass.syntax.monoid`
-3. Implement left and right identity laws in `MonoidLaws`
-3. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
-4. Implement a `Monoid` instance for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
+3. Implement left identity law in `MonoidLaws`: `empty.combine(a) == a`
+4. Implement right identity law in `MonoidLaws`: `a.combine(empty) == a`
+5. Implement a `Monoid` instance for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
+6. Implement a `Monoid` instance for `NonEmptyList[A]`, `Mult`, `First`, `Last` in `typeclass.data`
 
 ???
 - `Monoid[NonEmptyList]` is impossible
@@ -433,8 +434,55 @@ trait Monoid[A] extends Semigroup[A] {
 ---
 # Typeclass for higher kinded type
 
-TODO
+```scala
+scala> :k 1
+scala.Int's kind is A
 
+scala> :k String
+java.lang.String's kind is A		   
+
+scala> :k Option
+scala.Option's kind is F[+A]
+
+scala> :k scala.Function1
+scala.Function1's kind is F[-A1,+A2]
+```
+
+```tut:silent
+trait Semigroup[A]{}
+trait Functor[F[_]]{}
+
+new Semigroup[Int]{}
+new Functor[List]{}
+```
+
+```tut:fail
+new Functor[Int]{}
+```
+
+---
+# Functor Exercices
+
+```tut:silent
+trait Functor[F[_]] {
+  def map[A, B](fa: F[A])(f: A => B): F[B]
+
+  def void[A](fa: F[A]): F[Unit] = ???
+  def as[A, B](fa: F[A], b: B): F[B] = ???
+  def lift[A, B](f: A => B): F[A] => F[B] = ???
+}
+```
+
+1. Derive `void`, `as` and `lift` from `map`
+2. Write `FunctorOps` in `typeclass.syntax.functor`
+3. Implement map identity law in `FunctorLaws`: `fa.map(id) == fa`
+4. Implement map fusion law in `FunctorLaws`: `fa.map(f).map(g) == fa.map(g . f)`
+5. Implement a `Functor` instance for `List[A]`, `Option[A]` in `typeclass.std`
+6. Implement a `Functor` instance for `NonEmptyList[A]`, `Id` in `typeclass.data`
+
+???
+- for `Option` try not to reuse `map`
+	
 ---
 # Implicit resolution
 

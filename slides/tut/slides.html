@@ -490,19 +490,37 @@ trait Functor[F[_]] {
 - for `Option` try not to reuse `map`
 
 ---
+# Validation
+
+```tut:silent
+sealed trait Validation[E, A]
+case class Success[E, A](value: A) extends Validation[E, A]
+case class Failure[E, A](value: E) extends Validation[E, A]
+
+implicit def validationFunctor[E]: Functor[({type λ[a] = Validation[E, a]})#λ] =
+  new Functor[({type λ[a] = Validation[E, a]})#λ]{
+    def map[A, B](fa: Validation[E, A])(f: A => B): Validation[E, B] = ???
+  }
+
+// or with kind-projector
+	
+implicit def validationFunctor[E]: Functor[Validation[E, ?]] = new Functor[Validation[E, ?]]{
+  def map[A, B](fa: Validation[E, A])(f: A => B): Validation[E, B] = ???
+}
+```
+
+1. Implement an instance of `Functor` for `Validation`
+
+???
+- ? comes from kind projector
+
+---
 # Const
 
 ```tut:silent
 case class Const[A, B](value: A){
   def retag[C]: Const[A, C] = Const(value)
 }
-
-implicit def constFunctor[R]: Functor[({type λ[a] = Const[R, a]})#λ] =
-  new Functor[({type λ[a] = Const[R, a]})#λ]{
-    def map[A, B](fa: Const[R, A])(f: A => B): Const[R, B] = ???
-  }
-
-// or with kind-projector
 	
 implicit def constFunctor[R]: Functor[Const[R, ?]] = new Functor[Const[R, ?]]{
   def map[A, B](fa: Const[R, A])(f: A => B): Const[R, B] = ???
@@ -513,7 +531,6 @@ implicit def constFunctor[R]: Functor[Const[R, ?]] = new Functor[Const[R, ?]]{
 
 ???
 - Const has a phantom type	
-- ? comes from kind projector
 	
 ---
 # Implicits: Type dictionary

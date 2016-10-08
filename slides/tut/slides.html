@@ -557,6 +557,25 @@ fs.ap(xs)
 xs.map2(ys)(_ + _)
 xs.tuple2(ys)
 ```
+
+---
+# ZipStream
+
+```tut:silent
+import typeclass.data.ZipStream
+	  
+val xs = ZipStream(1,5,10)
+val ys = ZipStream(2,4)
+val fs = ZipStream((_: Int) + 1, (_: Int) * 2, (_: Int) - 1)
+```
+
+```tut:book
+fs.ap(xs)
+xs.map2(ys)(_ + _)
+xs.tuple2(ys)
+```
+
+1. Create `ZipStream` with such `Applicative` instance
 	  
 ---
 # Const

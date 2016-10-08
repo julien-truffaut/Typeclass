@@ -2,8 +2,6 @@ package typeclass
 
 import typeclass.Prelude._
 
-import scalaprops.Properties
-
 trait Applicative[F[_]] extends Functor[F]{
   def pure[A](a: A): F[A]
   def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
@@ -40,31 +38,29 @@ trait Applicative[F[_]] extends Functor[F]{
 }
 
 object Applicative {
-  /** syntax to summon an Applicative instance using Applicative[Foo] instead of implicitly[Applicative[Foo]] */
   def apply[F[_]](implicit ev: Applicative[F]): Applicative[F] = ev
 }
 
-/** All Applicative instance must respect the following laws */
 case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
   import typeclass.syntax.applicative._
   import typeclass.syntax.functor._
 
-  import scalaprops.Gen
+  import scalaprops.{Gen, Properties, Property}
   import scalaprops.Properties.properties
   import scalaprops.Property.forAll
   import scalaz.std.string._
 
-  def liftFunction[A, B](implicit genA: Gen[A], genAB: Gen[A => B]) =
+  def liftFunction[A, B](implicit genA: Gen[A], genAB: Gen[A => B]): Property =
     forAll((a: A, f: A => B) =>
       f.pure.ap(a.pure) == f(a).pure
     )
 
-  def apId[A](implicit genFA: Gen[F[A]]) =
+  def apId[A](implicit genFA: Gen[F[A]]): Property =
     forAll((fa: F[A]) =>
-      F.pure(identity[A](_)).ap(fa) == fa
+      (identity[A] _).pure.ap(fa) == fa
     )
 
-  def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]) =
+  def consistentMap[A, B](implicit genA: Gen[F[A]], genAB: Gen[A => B]): Property =
     forAll((fa: F[A], f: A => B) =>
       f.pure.ap(fa) == fa.map(f)
     )

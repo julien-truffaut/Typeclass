@@ -3,7 +3,6 @@ package typeclass.syntax
 import typeclass.Applicative
 
 object applicative {
-  /** pimp F[A] with all methods of ApplicativeOps if F has an instance of Applicative */
   implicit def applicativeOps[F[_]: Applicative, A](fa: F[A]): ApplicativeOps[F, A] = new ApplicativeOps(fa)
   implicit def applicativeOps2[F[_]: Applicative, A, B](fab: F[A => B]): Applicative2Ops[F, A, B] = new Applicative2Ops(fab)
   implicit def applicativeOps3[A](a: A): Applicative3Ops[A] = new Applicative3Ops(a)

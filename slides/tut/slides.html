@@ -515,6 +515,50 @@ implicit def validationFunctor[E]: Functor[Validation[E, ?]] = new Functor[Valid
 - ? comes from kind projector
 
 ---
+# Applicative exercices
+
+```tut:silent
+trait Applicative[F[_]] extends Functor[F]{
+  def pure[A](a: A): F[A]
+  def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
+
+  def map[A, B](fa: F[A])(f: A => B): F[B] = ???
+  def map2[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = ???
+  def *>[A, B](fa: F[A], fb: F[B]): F[B] = ???
+  def <*[A, B](fa: F[A], fb: F[B]): F[A] = ???
+  def forever[A](fa: F[A]): F[A] = ???
+  def tuple2[A, B](fa: F[A], fb: F[B]): F[(A, B)] = ???
+  def lift2[A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] = ???
+}
+```
+
+1. Implement derived `Applicative` methods: `map`, `map2`, ...
+2. Implement `ApplicativeOps` in `typeclass.syntax.functor`
+3. Implement lift function law in `ApplicativeLaws`: `ap(pure f, pure a) == pure f(a)`
+4. Implement ap id law in `ApplicativeLaws`: `ap(pure id, fa) == fa`
+5. Implement map consistency law in `ApplicativeLaws`
+6. Implement an instance of `Applicative` for `List`, `Option` in `typeclass.std`
+7. Implement an instance of `Applicative` for `NonEmptyList` and `Validation` in `typeclass.data`
+
+---
+# Applicative examples
+
+```tut:silent
+import typeclass.syntax.applicative._
+import typeclass.std.list._
+
+val xs = List(1,5,10)
+val ys = List(2,4)
+val fs = List[Int => Int](_ + 1, _ * 2, _ - 1)
+```
+
+```tut:book
+fs.ap(xs)
+xs.map2(ys)(_ + _)
+xs.tuple2(ys)
+```
+	  
+---
 # Const
 
 ```tut:silent

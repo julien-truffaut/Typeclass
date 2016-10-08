@@ -55,6 +55,12 @@ sbt clean test
 # Ad hoc polymorphism?
 
 ```tut:book
+def plus[A](a1: A, a2: A): A = ???
+def plus[A](a1: Int, a2: Int): Int = ???
+def plus[A](a1: Long, a2: Long): Long = ???
+```
+
+```tut:book
 1 + 2
 3.2 + 4.0
 
@@ -390,7 +396,7 @@ import typeclass.std.int._
 import typeclass.std.option._
 ```
 
-```tut
+```tut:book
 Option(1).combine(Option(2))
 First(Option(1)).combine(First(Option(2)))
 Last(Option(1)).combine(Last(Option(2)))
@@ -402,7 +408,7 @@ Last(Option(1)).combine(Last(Option(2)))
 import typeclass.std.string._
 ```
 
-```tut
+```tut:book
 "Hello".combine(" World")
 ```
 
@@ -508,9 +514,30 @@ implicit def constFunctor[R]: Functor[Const[R, ?]] = new Functor[Const[R, ?]]{
 ???
 - Const has a phantom type	
 - ? comes from kind projector
+	
+---
+# Implicits: Type dictionary
+
+```tut:silent
+implicit val i: Int = 2 
+implicit val l: Long = 3L
+```
+
+```tut:book
+implicitly[Int]
+implicitly[Long]
+```
+
+```tut:silent
+implicit val i2: Int = 0
+```
+
+```tut:fail
+implicitly[Int]
+```
 
 ---
-# Context bound syntax
+# Implicit parameters
 
 ```tut:invisible
 import typeclass.Semigroup
@@ -526,15 +553,23 @@ def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
 def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
   a1.combine(a2).combine(a3)
 ```
-
-???
-- parametricity
 	
+```tut:fail
+plus3(1L, 2L, 3L)
+```
+
+```tut:silent
+import typeclass.std.long._
+```
+
+```tut:book
+plus3(1L, 2L, 3L)
+```
+
 ---
-# Implicit resolution
+# Implicit conversion
 
-TODO
-
+	
 ---
 # Reduce boiler plate with simulacrum
 

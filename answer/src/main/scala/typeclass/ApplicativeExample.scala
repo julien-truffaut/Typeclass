@@ -17,16 +17,13 @@ object ApplicativeExample {
     else failureNel(s"$s does not start with an upper case")
   )
 
-  implicitly[Semigroup[NonEmptyList[String]]]
-  implicitly[Applicative[Validation[NonEmptyList[String], ?]]]
-
   def person(name: String, age: Int): Validation[NonEmptyList[String], Person] =
     Applicative[Validation[NonEmptyList[String], ?]].map2(
       capitalise(name), positive(age)
     )(Person(_, _))
 
   def person2(name: String, age: Int): Validation[NonEmptyList[String], Person] =
-  capitalise(name).map2(positive(age))(Person(_, _))
+    capitalise(name).map2(positive(age))(Person(_, _))
 }
 
 
@@ -45,9 +42,6 @@ object ApplicativeExampleWithUnnaply {
       if(c == c.toUpper) successNel(s)
       else failureNel(s"$s does not start with an upper case")
     )
-
-  implicitly[Semigroup[NonEmptyList[String]]]
-  implicitly[Applicative[Validation[NonEmptyList[String], ?]]]
 
   def person(name: String, age: Int): Validation[NonEmptyList[String], Person] =
     Applicative[Validation[NonEmptyList[String], ?]].map2(

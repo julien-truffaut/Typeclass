@@ -35,7 +35,6 @@ Julien Truffaut • `@JulienTruffaut`
 ---
 # Instructions
 
-
 Repository is on github `julien-truffaut/Typeclass`
 
 ```
@@ -515,6 +514,80 @@ implicit def validationFunctor[E]: Functor[Validation[E, ?]] = new Functor[Valid
 - ? comes from kind projector
 
 ---
+# Applicative
+
+```tut:silent
+trait Applicative[F[_]] extends Functor[F]{
+  def pure[A](a: A): F[A]
+  def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
+
+  def map[A, B](fa: F[A])(f: A => B): F[B] = ???
+  def map2[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = ???
+  def *>[A, B](fa: F[A], fb: F[B]): F[B] = ???
+  def <*[A, B](fa: F[A], fb: F[B]): F[A] = ???
+  def forever[A](fa: F[A]): F[A] = ???
+  def tuple2[A, B](fa: F[A], fb: F[B]): F[(A, B)] = ???
+  def lift2[A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] = ???
+}
+```
+
+???
+- `Applicative` is a `Functor`
+- `Applicative` has two primitive: `pure` and `ap`
+- `ap` looks fairly complited because of `F[A => B]`, in essence `ap` and `map2` are the same	  
+- `Applicative` has a default implementation of `map` from `Functor`
+	  
+---
+# Applicative examples
+
+```tut:silent
+import typeclass.syntax.applicative._
+import typeclass.std.list._
+
+val xs = List(1,5,10)
+val ys = List(2,4)
+val fs = List[Int => Int](_ + 1, _ * 2, _ - 1)
+```
+
+```tut:book
+fs.ap(xs)
+xs.map2(ys)(_ + _)
+xs.tuple2(ys)
+```
+---
+# Applicative examples
+
+```tut:invisible
+import typeclass.Applicative
+```
+
+```tut:silent
+import typeclass.data.{Validation, NonEmptyList}
+import typeclass.data.Validation.{successNel, failureNel}
+import typeclass.syntax.applicative2._
+
+case class Person(name: String, age: Int)
+
+def positive(n: Int): Validation[NonEmptyList[String], Int] =
+  if(n <= 0) failureNel(s"$n is not positive") else successNel(n)
+
+def capitalise(s: String): Validation[NonEmptyList[String], String] =
+  s.headOption.fold(successNel[String, String](s))(c =>
+    if(c == c.toUpper) successNel(s)
+    else failureNel(s"$s does not start with an upper case")
+  )
+
+def person(name: String, age: Int): Validation[NonEmptyList[String], Person] =
+  capitalise(name).map2(positive(age))(Person(_, _))
+```
+
+```tut:book
+person("John", 24)
+person("John", -2)
+person("john", 0)
+```
+
+---
 # Applicative exercices
 
 ```tut:silent
@@ -540,23 +613,10 @@ trait Applicative[F[_]] extends Functor[F]{
 6. Implement an instance of `Applicative` for `List`, `Option` in `typeclass.std`
 7. Implement an instance of `Applicative` for `NonEmptyList` and `Validation` in `typeclass.data`
 
----
-# Applicative examples
+???
 
-```tut:silent
-import typeclass.syntax.applicative._
-import typeclass.std.list._
 
-val xs = List(1,5,10)
-val ys = List(2,4)
-val fs = List[Int => Int](_ + 1, _ * 2, _ - 1)
-```
 
-```tut:book
-fs.ap(xs)
-xs.map2(ys)(_ + _)
-xs.tuple2(ys)
-```
 
 ---
 # ZipStream
@@ -576,24 +636,6 @@ xs.tuple2(ys)
 ```
 
 1. Create `ZipStream` with such `Applicative` instance
-	  
----
-# Const
-
-```tut:silent
-case class Const[A, B](value: A){
-  def retag[C]: Const[A, C] = Const(value)
-}
-	
-implicit def constFunctor[R]: Functor[Const[R, ?]] = new Functor[Const[R, ?]]{
-  def map[A, B](fa: Const[R, A])(f: A => B): Const[R, B] = ???
-}
-```
-
-1. Implement an instance of `Functor` for `Const`
-
-???
-- Const has a phantom type	
 	
 ---
 # Implicits: Type dictionary

@@ -20,6 +20,9 @@ object Validation {
   def failure[E, A](e: E): Validation[E, A] = Failure(e)
   def success[E, A](a: A): Validation[E, A] = Success(a)
 
+  def failureNel[E, A](e: E): Validation[NonEmptyList[E], A] = Failure(NonEmptyList(e))
+  def successNel[E, A](a: A): Validation[NonEmptyList[E], A] = Success(a)
+
   implicit def validationApplicative[E](implicit E: Semigroup[E]): Applicative[Validation[E, ?]] = new Applicative[Validation[E, ?]] {
     def pure[A](a: A): Validation[E, A] = success(a)
     def ap[A, B](fab: Validation[E, A => B], fa: Validation[E, A]): Validation[E, B] =

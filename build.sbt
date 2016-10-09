@@ -1,5 +1,6 @@
 lazy val baseSettings: Seq[Setting[_]] = Seq(
   organization       := "com.github.julien-truffaut",
+  scalaOrganization  := "org.typelevel",
   scalaVersion       := "2.11.8",
   scalacOptions     ++= Seq(
     "-deprecation",

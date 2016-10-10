@@ -61,17 +61,7 @@ cd Typeclass
 sbt clean answer/test
 ```
 
-```
-typeclass.data.MultTest$
-`- monoid
-  `- Monoid-all
-    +- Semigroup
-    | `- associative .................................................. Passed(100,0) 3
-    `- Monoid
-      +- leftIdentity .................................................. Passed(100,0) 1
-      `- rightIdentity .................................................. Passed(100,0) 1
-[info] typeclass.data.MultTest$ 5 ms
-```
+.center[![tests](scalaprop.png)]
 
 ---
 
@@ -337,30 +327,6 @@ object TextTest extends Scalaprops {
 	 
   val label = LabelLaws[Text].all
 }		 
-```
-
----
-# Typeclass + Instance
-
-```tut:silent
-trait Label[A] {
-  def getLabel(a: A): String
-  def setLabel(a: A, s: String): A
-}; object Label {
-  def apply[A](implicit ev: Label[A]): Label[A] = ev
-
-  implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
-    def getLabel: String = ev.getLabel(a)
-    def setLabel(s: String): A = ev.setLabel(a, s)
-  }
-}
-
-case class Text(label: String, maxLength: Int); object Text {
-  implicit val label: Label[Text] = new Label[Text]{
-    def getLabel(a: Text): String = a.label
-    def setLabel(a: Text, s: String): Text = a.copy(label = s)
-  }
-}
 ```
 
 ---

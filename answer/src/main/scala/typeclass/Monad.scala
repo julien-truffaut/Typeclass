@@ -16,13 +16,12 @@ trait Monad[F[_]] extends Applicative[F]{
 }
 
 object Monad {
-  /** syntax to summon an Monad instance using Monad[Foo] instead of implicitly[Monad[Foo]] */
   def apply[F[_]](implicit ev: Monad[F]): Monad[F] = ev
 }
 
-/** All Monad instance must respect the following laws */
 case class MonadLaws[F[_]](implicit F: Monad[F]) {
   import typeclass.syntax.applicative._
+  import typeclass.syntax.apply._
   import typeclass.syntax.functor._
   import typeclass.syntax.monad._
 

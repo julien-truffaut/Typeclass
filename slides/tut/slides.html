@@ -33,17 +33,17 @@ Julien Truffaut • `@JulienTruffaut`
 - notes here
 
 ---
-# Instructions
+# Project
 
 Repository is on github `julien-truffaut/Typeclass`
 
-```
-git clone https://github.com/julien-truffaut/Typeclass.git
-
-cd Typeclass
-
-sbt clean test
-```
+* `scala` (typelevel) 2.11.8
+* `tut` for documentation
+* `scalaprops` for testing 
+* 3 modules:
+   * `slides`
+   * `answer`
+   * `exercice`
 
 ???
 - all the code in the slides are compiled using tut
@@ -51,9 +51,33 @@ sbt clean test
 
 ---
 
+# Setup
+
+```
+git clone https://github.com/julien-truffaut/Typeclass.git
+
+cd Typeclass
+
+sbt clean answer/test
+```
+
+```
+typeclass.data.MultTest$
+`- monoid
+  `- Monoid-all
+    +- Semigroup
+    | `- associative .................................................. Passed(100,0) 3
+    `- Monoid
+      +- leftIdentity .................................................. Passed(100,0) 1
+      `- rightIdentity .................................................. Passed(100,0) 1
+[info] typeclass.data.MultTest$ 5 ms
+```
+
+---
+
 # Ad hoc polymorphism?
 
-```tut:book
+```tut:silent
 def plus[A](a1: A, a2: A): A = ???
 def plus[A](a1: Int, a2: Int): Int = ???
 def plus[A](a1: Long, a2: Long): Long = ???
@@ -70,6 +94,18 @@ Vector(1,2,3).map(_ + 1)
 ???
 - overloading a function
 - parametric polymorphism: `def take[A](xs: List[A]): List[A]`
+
+---
+
+# Polymorphism example
+
+```tut:silent
+trait Input
+case class Text(label: String, maxLength: Int) extends Input
+case class Select(label: String, options: List[String]) extends Input
+
+def setLabel[A](a: A, s: String): A = ???
+```
 
 ---
 
@@ -581,8 +617,8 @@ def person(name: String, age: Int): ValidationNel[String, Person] =
 
 ```tut:book
 person("John", 24)
-person("John", -2)
-person("john", 0)
+person("john", 24)
+person("john", -2)
 ```
 
 ---

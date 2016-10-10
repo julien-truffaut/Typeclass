@@ -15,7 +15,8 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
     //  "-Yno-predef", "-Yno-imports",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard",
-    "-Xfuture"
+    "-Xfuture",
+    "-Ypartial-unification"
   ),
   resolvers += Resolver.sonatypeRepo("releases"),
   libraryDependencies ++= Seq(
@@ -29,8 +30,8 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
 lazy val typeclass = project.in(file("."))
   .settings(moduleName := "typeclass")
   .settings(baseSettings)
-  .aggregate(answer, exercice)
-  .dependsOn(answer, exercice)
+  .aggregate(answer, exercice, slides)
+  .dependsOn(answer, exercice, slides)
 
 lazy val answer = project
   .settings(moduleName := "typeclass-answer")

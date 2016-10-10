@@ -565,19 +565,17 @@ import typeclass.Applicative
 import typeclass.data.{Validation, NonEmptyList}
 import typeclass.data.Validation.{successNel, failureNel}
 import typeclass.syntax.applicative._
-
+type ValidationNel[E, A] = Validation[NonEmptyList[E], A]
+	  
 case class Person(name: String, age: Int)
 
-def positive(n: Int): Validation[NonEmptyList[String], Int] =
+def positive(n: Int): ValidationNel[String, Int] =
   if(n <= 0) failureNel(s"$n is not positive") else successNel(n)
 
-def capitalise(s: String): Validation[NonEmptyList[String], String] =
-  s.headOption.fold(successNel[String, String](s))(c =>
-    if(c == c.toUpper) successNel(s)
-    else failureNel(s"$s does not start with an upper case")
-  )
+def capitalise(s: String): ValidationNel[String, String] =
+  if(s != s.capitalize) failureNel(s"$s is not capitalised") else successNel(s)
 
-def person(name: String, age: Int): Validation[NonEmptyList[String], Person] =
+def person(name: String, age: Int): ValidationNel[String, Person] =
   capitalise(name).map2(positive(age))(Person(_, _))
 ```
 

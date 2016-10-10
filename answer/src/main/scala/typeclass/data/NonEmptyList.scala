@@ -6,6 +6,9 @@ import scalaprops.Gen
 
 final case class NonEmptyList[A](head: A, tail: List[A]){
   def toList: List[A] = head :: tail
+
+  override def toString: String =
+    toList.mkString("Nel(", ", ", ")")
 }
 
 object NonEmptyList {

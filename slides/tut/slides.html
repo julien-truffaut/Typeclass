@@ -33,7 +33,7 @@ Julien Truffaut • `@JulienTruffaut`
 - notes here
 
 ---
-# Project
+# Project setup
 
 Repository is on github `julien-truffaut/Typeclass`
 
@@ -51,7 +51,7 @@ Repository is on github `julien-truffaut/Typeclass`
 
 ---
 
-# Setup
+# Installation
 
 ```
 git clone https://github.com/julien-truffaut/Typeclass.git
@@ -212,20 +212,15 @@ case class Color(label: String) extends Radio(label, List("Red", "Blue", "Yellow
 - at this point, I give up with interitance
 
 ---
-# A typeclass definition in scala
-
-Typeclasses are not first class construct in scala but they generally require the following components:
-  
-1. typeclass is encoded as a `trait` with one or more type parameters
-2. instances of the typeclasses are encoded as `implicit` values of the `trait`
-3. syntax to extend all typeclass methods to types with an instance via an `implicit class`
-4. laws or properties to define invariants of the typeclass
+class: center, middle
+		   
+# Typeclasses in Scala
 
 ???
-- Typeclass are not a 1st class construct means they are derived from other constructs 
-- encoding is not unique, here I will present the most common one used in (scalaz, cats, argonaut, circe, etc ...) 
+- typeclasses are not first class (as opposed to haskell or purescript) so impl varies
+- but it generally contains the following components		   
 ---
-# Trait and companion object
+# 1. Trait and companion object
 
 ```tut:silent
 trait Label[A] {
@@ -239,9 +234,10 @@ object Label {
 ```
 ???
 - trait or abstract class
-- `apply` method is just a short cut to summon an instance, `Label[Text]` instead of `implicitly[Label[Text]]`
+- 1 or more type parameters		   
+- `apply` method is a short cut to summon an instance, `Label[Text]` instead of `implicitly[Label[Text]]`
 ---
-# Instances
+# 2. Instances
 
 ```tut:silent
 implicit val labelText: Label[Text] = new Label[Text] {
@@ -250,9 +246,10 @@ implicit val labelText: Label[Text] = new Label[Text] {
 }
 ```
 
-Instances should be located in:
-- companion object of the typeclass (e.g. `Label`) or		   
-- companion object of the type (e.g. `Text`)
+Instances are generally located in:
+1. companion object of the typeclass (e.g. `Label`) or	   
+2. companion object of the type (e.g. `Text`) or
+3. a standard object in a dedicated package (e.g. `typeclass.std.int`)
 
 ```tut:book
 val text = Text("What is your name?", maxLength = 20)
@@ -262,9 +259,9 @@ implicitly[Label[Text]].getLabel(text)
 Label[Text].getLabel(text)
 Label[Text].setLabel(text, "foo")
 ```
-		   
+
 ---
-# Syntax
+# 3. Syntax
 
 ```tut:silent
 implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
@@ -285,7 +282,7 @@ text.setLabel("foo")
 - typeclasses permit retroactive extension, i.e. extending types define somewhere else   
 
 ---
-# Laws
+# 4. Laws
 
 ```tut:silent
 import scalaprops.{Gen, Properties}
@@ -312,7 +309,7 @@ case class LabelLaws[A](implicit A: Label[A]) {
 - there are more freedom regarding location of laws, some people like to have it in the same file or same module than the typeclass but it requires to add `Scalacheck` or `scalaprop` to your main dependencies. Other people prefer to define them in a separate module or in test
 
 ---
-# Laws
+# 4. Laws
 
 ```tut:silent
 import scalaprops.Scalaprops
@@ -329,6 +326,18 @@ object TextTest extends Scalaprops {
 }		 
 ```
 
+---
+# Typeclasses in scala
+
+1. typeclass is encoded via a `trait` with one or more type parameters
+2. values of the typeclass (instances) are marked as `implicit` values
+3. syntax to extend all typeclass methods to types with an instance via an `implicit class`
+4. laws or properties to define invariants of the typeclass
+
+???
+- Typeclass are not a 1st class construct means they are derived from other constructs 
+- encoding is not unique, here I will present the most common one used in (scalaz, cats, argonaut, circe, etc ...) 
+	 
 ---
 # Semigroup exercices
 

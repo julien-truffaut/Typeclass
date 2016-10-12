@@ -353,16 +353,16 @@ object TextTest extends Scalaprops {
 - encoding is not unique, here I will present the most common one used in (scalaz, cats, argonaut, circe, etc ...)
 
 ---
-# Semigroup exercices
+# Semigroup
 
 ```tut:silent
 trait Semigroup[A] {
   def combine(x: A, y: A): A
 }
 ```
-
+	 
 1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
-2. Implement associative law in `SemigroupLaws`
+2. Implement associative law in `SemigroupLaws`: `(a + b) + c == a + (b + c)` 
 3. Implement an instance of `Semigroup` for `String`, `Int`, `List[A]`, `Option[A]` in `typeclass.std`
 4. Implement an instance of `Semigroup` for `NonEmptyList[A]` in `typeclass.data`
 	 
@@ -374,57 +374,21 @@ run tests using: `sbt exercice/test`
 - what about `Option`? `First`, `Last`
 
 ---
-# Instance uniqueness
-
-
-```tut:silent
-implicit val additiveInt: Semigroup[Int] = new Semigroup[Int]{
-  def combine(x: Int, y: Int): Int = x + y
-}
-implicit val multiplicativeInt: Semigroup[Int] = new Semigroup[Int]{
-  def combine(x: Int, y: Int): Int = x * y
-}
-```
-
-```tut:fail
-implicitly[Semigroup[Int]]
-```
----
-# Newtype
-
-```scala
-case class Mult(value: Int)
-implicit val multSemigroup: Semigroup[Mult] = new Semigroup[Mult]{
-  def combine(x: Mult, y: Mult): Mult =
-    Mult(x.value * y.value)	 
-}
-
-case class First[A](value: Option[A])
-case class Last[A](value: Option[A])
-
-implicit def firstSemigroup[A]: Semigroup[First[A]] = ???
-implicit def lastSemigroup[A] : Semigroup[Last[A]]  = ???
-```
-
-1. Implement a `Semigroup` instance for `First`, `Last` in `typeclass.data`
+# Semigroup examples
 	 
----
-# Semigroup
-
-```tut:invisible
-import typeclass.data.{NonEmptyList, First, Last}
-```
 ```tut:silent
 import typeclass.syntax.semigroup._
 import typeclass.std.int._
+import typeclass.std.list._	 
 import typeclass.std.option._
 ```
 
 ```tut:book
+5.combine(2)
 Option(1).combine(Option(2))
-First(Option(1)).combine(First(Option(2)))
-Last(Option(1)).combine(Last(Option(2)))
+List(1, 2, 3).combine(List(4, 5))
 ```
+	 
 ```tut:fail
 "Hello".combine(" World")
 ```
@@ -435,6 +399,54 @@ import typeclass.std.string._
 ```tut:book
 "Hello".combine(" World")
 ```
+	 
+---
+# Instance uniqueness
+
+```tut:silent
+implicit val additiveInt: Semigroup[Int] = new Semigroup[Int]{
+  def combine(x: Int, y: Int): Int = x + y
+}
+	 
+implicit val multiplicativeInt: Semigroup[Int] = new Semigroup[Int]{
+  def combine(x: Int, y: Int): Int = x * y
+}
+```
+
+```tut:fail
+implicitly[Semigroup[Int]]
+```
+---
+# Mult newtype
+
+```scala
+case class Mult(value: Int)
+
+implicit val multSemigroup: Semigroup[Mult] = new Semigroup[Mult]{
+  def combine(x: Mult, y: Mult): Mult =
+    Mult(x.value * y.value)	 
+}
+```
+
+---
+# First - Last newtype
+
+```scala
+case class First[A](value: Option[A])
+case class Last[A](value: Option[A])
+```
+
+```tut:invisible
+import typeclass.data.{First, Last}
+```
+	 
+```tut:book
+Option(1).combine(Option(2))
+First(Option(1)).combine(First(Option(2)))
+Last(Option(1)).combine(Last(Option(2)))
+```
+	 
+1. Implement a `Semigroup` instance for `First`, `Last` in `typeclass.data`
 
 ???
 - for your own data type, instances are in the companion object => no need of extra import

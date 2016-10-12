@@ -16,7 +16,7 @@ case class SemigroupLaws[A](implicit A: Semigroup[A]) {
   import scalaz.std.string._
 
   def associative(implicit genA: Gen[A]): Property =
-    forAll((x: A, y: A, z: A) => x.combine(y).combine(z) == x.combine(y.combine(z)))
+    forAll((x: A, y: A, z: A) => ???)
 
   def all(implicit genA: Gen[A]) =
     properties("Semigroup")(("associative", associative))

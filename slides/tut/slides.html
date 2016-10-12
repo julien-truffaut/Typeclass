@@ -452,7 +452,64 @@ Last(Option(1)).combine(Last(Option(2)))
 - for your own data type, instances are in the companion object => no need of extra import
 
 ---
-# Monoid Exercices
+# Monoid
+
+```tut:silent
+trait Monoid[A] extends Semigroup[A] {
+  def empty: A
+
+  def isEmpty(a: A): Boolean = ???
+  def ifEmpty[B](a: A)(t: => B)(f: => B): B = ???
+}
+```
+
+???
+- all `Monoid` are `Semigroup`
+- `empty` is defined to be the `zero` of `combine`
+		   
+---
+# Monoid examples
+
+```tut:silent
+import typeclass.syntax.monoid._
+```
+
+```tut:book
+List(1,2,3).ifEmpty("Hello")("World")
+0.ifEmpty(10)(5)
+Option.empty.isEmpty
+```
+
+???
+- `Monoid` syntax allows to check for emptyness
+		   
+---
+# Monoid examples
+
+```tut:reset:invisible
+import typeclass.{Semigroup, Monoid}
+import typeclass.data._
+import typeclass.syntax.semigroup._
+import typeclass.std.int._		   
+```
+
+```tut:silent
+def foldMap[A, B: Monoid](xs: List[A])(f: A => B): B =
+  xs.map(f).foldLeft(Monoid[B].empty)(_.combine(_))	
+```
+
+```tut:book
+foldMap(List(1,2,3,4))(identity)
+foldMap(List(1,2,3,4))(Mult(_))
+foldMap(List(1,2,3,4))(i => First(Option(i)))
+foldMap(List(1,2,3,4))(i => Last(Option(i)))
+```
+???
+- `Monoid` are generally used with `fold` see typeclass `Foldable`	
+- `First` and `Last` provide an elegant way to implement `headOption` and `lastOption`
+
+---
+# Monoid
 
 ```tut:silent
 trait Monoid[A] extends Semigroup[A] {
@@ -472,7 +529,7 @@ trait Monoid[A] extends Semigroup[A] {
 
 ???
 - `Monoid[NonEmptyList]` is impossible
-	
+
 ---
 # Typeclass for higher kinded type
 
@@ -730,28 +787,32 @@ plus3(1L, 2L, 3L)
 ---
 # Reduce boiler plate with simulacrum
 
+```tut:invisible
+case class Text(label: String, maxLength: Int)
+```
+	      
 ```tut:silent
 import simulacrum._
 
-@typeclass trait Label2[A]{
-  def getLabel2(a: A): String
-  def setLabel2(a: A, s: String): A
+@typeclass trait Label[A]{
+  def getLabel(a: A): String
+  def setLabel(a: A, s: String): A
 }
 		   
-implicit val label2Text: Label2[Text] = new Label2[Text] {
-  def getLabel2(a: Text): String = a.label
-  def setLabel2(a: Text, s: String): Text = a.copy(label = s)
+implicit val labelText: Label[Text] = new Label[Text] {
+  def getLabel(a: Text): String = a.label
+  def setLabel(a: Text, s: String): Text = a.copy(label = s)
 }
 ```
 
 ```tut:invisible
-val text = Text.apply("What is your name?", maxLength = 20)
+val text = Text("What is your name?", maxLength = 20)
 ```
 
 ```tut:book
-import Label2.ops._
-text.getLabel2
-text.setLabel2("foo")
+import Label.ops._
+text.getLabel
+text.setLabel("foo")
 ```
 
 ---

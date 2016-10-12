@@ -53,7 +53,7 @@ Repository is on github `julien-truffaut/Typeclass`
 
 # Installation
 
-```
+```shell
 git clone https://github.com/julien-truffaut/Typeclass.git
 
 cd Typeclass
@@ -247,9 +247,9 @@ implicit val labelText: Label[Text] = new Label[Text] {
 ```
 
 Instances are generally located in:
-1. companion object of the typeclass (e.g. `Label`) or	   
-2. companion object of the type (e.g. `Text`) or
-3. a standard object in a dedicated package (e.g. `typeclass.std.int`)
+1. companion object of the type (e.g. `Text`) or
+2. companion object of the typeclass (e.g. `Label`) or
+3. an object in a dedicated package (e.g. `typeclass.std.int`)
 
 ```tut:book
 val text = Text("What is your name?", maxLength = 20)
@@ -260,6 +260,11 @@ Label[Text].getLabel(text)
 Label[Text].setLabel(text, "foo")
 ```
 
+???
+- preferably 1. but doesn't work if type define somewhere else e.g. String
+- 2. would be the alternative in haskell but we will see later why 3. is often preferred in scala
+- we summon an instance using `implictly` or typeclass companion object `apply`
+
 ---
 # 3. Syntax
 
@@ -268,11 +273,13 @@ implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
   def getLabel: String = ev.getLabel(a)
   def setLabel(s: String): A = ev.setLabel(a, s)
 }
-```
-
-Implicit class is generally located in the companion of the typeclass (e.g. `Label`)
+```		   
+		   
+Syntax classes are generally located in the companion of the typeclass (e.g. `Label`)
 
 ```tut:book
+Label[Text].getLabel(text)
+		   
 text.getLabel
 text.setLabel("foo")
 ```
@@ -280,6 +287,7 @@ text.setLabel("foo")
 ???
 - this pattern is often refer to pimp a class
 - typeclasses permit retroactive extension, i.e. extending types define somewhere else   
+- implicit class is just syntax sugar for class + implicit def
 
 ---
 # 4. Laws
@@ -306,6 +314,9 @@ case class LabelLaws[A](implicit A: Label[A]) {
 }
 ```
 ???
+- `Gen` is a typeclass to generate random value 
+- `Property` is a test that generate random input and test invariants
+- `Properties` is just a set of `Property`
 - there are more freedom regarding location of laws, some people like to have it in the same file or same module than the typeclass but it requires to add `Scalacheck` or `scalaprop` to your main dependencies. Other people prefer to define them in a separate module or in test
 
 ---
@@ -326,18 +337,21 @@ object TextTest extends Scalaprops {
 }		 
 ```
 
+???
+- `LabelLaws` requires a `Gen[String]` and `Gen[A]`, here `A == Text` 
+
 ---
 # Typeclasses in scala
 
-1. typeclass is encoded via a `trait` with one or more type parameters
-2. values of the typeclass (instances) are marked as `implicit` values
-3. syntax to extend all typeclass methods to types with an instance via an `implicit class`
-4. laws or properties to define invariants of the typeclass
+1. typeclasses are encoded using a `trait` with one or more type parameters
+2. values of the typeclass (instances) are marked as `implicit`
+3. syntax extend class with methods from the typeclass
+4. laws define invariants of the typeclass and generate tests 
 
 ???
-- Typeclass are not a 1st class construct means they are derived from other constructs 
-- encoding is not unique, here I will present the most common one used in (scalaz, cats, argonaut, circe, etc ...) 
-	 
+- Typeclasses are not a 1st class construct means they are derived from other constructs 
+- encoding is not unique, here I will present the most common one used in (scalaz, cats, argonaut, circe, etc ...)
+
 ---
 # Semigroup exercices
 

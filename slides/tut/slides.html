@@ -275,7 +275,10 @@ implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
 }
 ```		   
 		   
-Syntax classes are generally located in the companion of the typeclass (e.g. `Label`)
+Syntax classes are generally located in:
+1. companion of the typeclass (e.g. `Label`)
+2. an object in a syntax package (e.g. `typeclass.syntax.int`)
+		   
 
 ```tut:book
 Label[Text].getLabel(text)
@@ -345,8 +348,8 @@ object TextTest extends Scalaprops {
 
 1. typeclasses are encoded using a `trait` with one or more type parameters
 2. values of the typeclass (instances) are marked as `implicit`
-3. syntax extend class with methods from the typeclass
-4. laws define invariants of the typeclass and generate tests 
+3. syntax to extend a class with methods from the typeclass
+4. laws to define invariants of the typeclass and generate tests 
 
 ???
 - Typeclasses are not a 1st class construct means they are derived from other constructs 
@@ -398,22 +401,101 @@ import typeclass.std.string._
 ```tut:book
 "Hello".combine(" World")
 ```
-	 
+
 ---
-# Instance uniqueness
+class: center, middle	 
+# Implicits
+
+
+---
+# Implicits: Type dictionary
 
 ```tut:silent
-implicit val additiveInt: Semigroup[Int] = new Semigroup[Int]{
-  def combine(x: Int, y: Int): Int = x + y
+implicit val i: Int = 2 
+implicit val l: Long = 3L
+```
+
+```tut:book
+implicitly[Int]
+implicitly[Long]
+```
+
+```tut:silent
+implicit val i2: Int = 0
+```
+
+```tut:fail
+implicitly[Int]
+```
+
+---
+# Implicit parameters
+
+```tut:invisible
+import typeclass.Semigroup
+```	 
+	 
+```tut:silent
+def plus3[A](a1: A, a2: A, a3: A)(implicit ev: Semigroup[A]): A =
+  ev.combine(ev.combine(a1, a2), a3)
+
+def plus3[A](a1: A, a2: A, a3: A)(implicit ev: Semigroup[A]): A =
+  a1.combine(a2).combine(a3)
+
+def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
+  a1.combine(a2).combine(a3)
+```
+	
+```tut:book
+plus3(1, 2, 3)
+```
+???
+- scope:
+1. Implicits defined in current scope
+2. Explicit imports
+3. Companion object of source type e.g. Option for Semigroup[Option]
+4. Companion object of type class e.g. Semigroup 
+5. rules are in fact more complicated, see Where does Scala look for implicits?
+
+---
+# Implicit conversion
+
+```tut:silent
+case class MyString(s: String){
+  def isPalindrome: Boolean = s == s.reverse
+}
+
+implicit def stringToMyString(s: String): MyString = new MyString(s)
+```
+
+```tut:silent
+implicit class MyString2(s: String){
+  def shout: String = s.map(_.toUpper)
+}
+```
+
+```tut:book
+"hello".isPalindrome
+"kayak".isPalindrome
+"lalalala".shout	 
+```
+???
+- essential for syntax	 
+---
+# Instance uniqueness
+	 
+```tut:silent
+implicit val additiveLong: Semigroup[Long] = new Semigroup[Long]{
+  def combine(x: Long, y: Long): Long = x + y
 }
 	 
-implicit val multiplicativeInt: Semigroup[Int] = new Semigroup[Int]{
-  def combine(x: Int, y: Int): Int = x * y
+implicit val multiplicativeLong: Semigroup[Long] = new Semigroup[Long]{
+  def combine(x: Long, y: Long): Long = x * y
 }
 ```
 
 ```tut:fail
-implicitly[Semigroup[Int]]
+implicitly[Semigroup[Long]]
 ```
 ---
 # Mult newtype
@@ -471,6 +553,13 @@ trait Monoid[A] extends Semigroup[A] {
 }
 ```
 
+Such as
+		   
+```scala
+combine(a, empty) == a
+combine(empty, a) == a
+```
+
 ???
 - all `Monoid` are `Semigroup`
 - `empty` is defined to be the `zero` of `combine`
@@ -515,6 +604,7 @@ foldMap(List(1,2,3,4))(i => Last(Option(i)))
 ???
 - `Monoid` are generally used with `fold` see typeclass `Foldable`	
 - `First` and `Last` provide an elegant way to implement `headOption` and `lastOption`
+- `Min`, `Max`
 
 ---
 # Monoid
@@ -753,61 +843,6 @@ xs.tuple2(ys)
 1. Create `ZipStream` with such `Applicative` instance
 	
 ---
-# Implicits: Type dictionary
-
-```tut:silent
-implicit val i: Int = 2 
-implicit val l: Long = 3L
-```
-
-```tut:book
-implicitly[Int]
-implicitly[Long]
-```
-
-```tut:silent
-implicit val i2: Int = 0
-```
-
-```tut:fail
-implicitly[Int]
-```
-
----
-# Implicit parameters
-
-```tut:invisible
-import typeclass.Semigroup
-```
-
-```tut:silent
-def plus3[A](a1: A, a2: A, a3: A)(implicit ev: Semigroup[A]): A =
-  ev.combine(ev.combine(a1, a2), a3)
-
-def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
-  Semigroup[A].combine(Semigroup[A].combine(a1, a2), a3)
-
-def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
-  a1.combine(a2).combine(a3)
-```
-	
-```tut:fail
-plus3(1L, 2L, 3L)
-```
-
-```tut:silent
-import typeclass.std.long._
-```
-
-```tut:book
-plus3(1L, 2L, 3L)
-```
-
----
-# Implicit conversion
-
-	
----
 # Reduce boiler plate with simulacrum
 
 ```tut:invisible
@@ -853,7 +888,7 @@ Code and slides at `julien-truffaut/Typeclass` on GitHub
 - [tut](https://github.com/tpolecat/tut), [remark.js](https://github.com/gnab/remark), tpolecat [presentation]((https://github.com/tpolecat/cofree/blob/master/tut/slides.html)) I copied from
 - [Returning the "Current" Type in Scala](https://tpolecat.github.io/2015/04/29/f-bounds.html) by Rob Norris
 - [Type Classes as Objects and Implicits](http://ropas.snu.ac.kr/~bruno/papers/TypeClasses.pdf) by Oliveira, Bruno; Adriaan Moors; Martin Odersky (2010)
-
+- [Where does Scala look for implicits?](http://docs.scala-lang.org/tutorials/FAQ/finding-implicits.html)
 
 
 

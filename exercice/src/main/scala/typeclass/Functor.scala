@@ -19,13 +19,9 @@ case class FunctorLaws[F[_]](implicit F: Functor[F]) {
   import scalaprops.Property.forAll
   import scalaz.std.string._
 
-  def mapId[A](implicit genFA: Gen[F[A]]) =
-    forAll((fa: F[A]) => fa.map(identity) == fa)
+  def mapId[A](implicit genFA: Gen[F[A]]) = ???
 
-  def mapFusion[A, B, C](implicit genFA: Gen[F[A]], genAB: Gen[A => B], genBC: Gen[B => C]) =
-    forAll((fa: F[A], f: A => B, g: B => C) =>
-      fa.map(f).map(g)== fa.map(g compose f)
-    )
+  def mapFusion[A, B, C](implicit genFA: Gen[F[A]], genAB: Gen[A => B], genBC: Gen[B => C]) = ???
 
   def all(implicit genFI: Gen[F[Int]], genF: Gen[Int => Int]) =
     properties("Functor")(

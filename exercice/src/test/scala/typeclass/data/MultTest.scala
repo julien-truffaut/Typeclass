@@ -6,6 +6,6 @@ import scalaprops.Scalaprops
 
 object MultTest extends Scalaprops {
 
-  val monoid = SemigroupLaws[Mult].all
+//  val semigroup = SemigroupLaws[Mult].all
 
 }

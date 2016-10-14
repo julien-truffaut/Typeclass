@@ -595,7 +595,7 @@ trait Functor[F[_]] {
 }
 ```
 
-1. Derive `void`, `as` and `lift` from `map`
+1. Implement `void`, `as` and `lift` from `map`
 2. Write `FunctorOps` in `typeclass.syntax.functor`
 3. Implement map identity law in `FunctorLaws`: `fa.map(id) == fa`
 4. Implement map fusion law in `FunctorLaws`: `fa.map(f).map(g) == fa.map(g . f)`

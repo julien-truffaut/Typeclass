@@ -10,5 +10,5 @@ sbt slides/tut     // to generate the slides in slides/tut-out
 
 sbt answer/test    // to run the tests in the answer module
 
-sbt exercice/test  // to run the tests in the exercice module
+sbt exercise/test  // to run the tests in the exercise module
 ```

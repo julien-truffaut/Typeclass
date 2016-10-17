@@ -30,16 +30,16 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
 lazy val typeclass = project.in(file("."))
   .settings(moduleName := "typeclass")
   .settings(baseSettings)
-  .aggregate(answer, exercice, slides)
-  .dependsOn(answer, exercice, slides)
+  .aggregate(answer, exercise, slides)
+  .dependsOn(answer, exercise, slides)
 
 lazy val answer = project
   .settings(moduleName := "typeclass-answer")
   .settings(baseSettings)
   .settings(testSettings)
 
-lazy val exercice = project
-  .settings(moduleName := "typeclass-exercice")
+lazy val exercise = project
+  .settings(moduleName := "typeclass-exercise")
   .settings(baseSettings)
   .settings(testSettings)
 

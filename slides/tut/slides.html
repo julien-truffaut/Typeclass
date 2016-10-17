@@ -534,6 +534,8 @@ import typeclass.data.{First, Last}
 Option(1).combine(Option(2))
 First(Option(1)).combine(First(Option(2)))
 Last(Option(1)).combine(Last(Option(2)))
+
+First(Option.empty[Int]).combine(First(Some(2)))
 ```
 	 
 1. Implement a `Semigroup` instance for `First`, `Last` in `typeclass.data`

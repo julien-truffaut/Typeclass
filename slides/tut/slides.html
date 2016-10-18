@@ -843,14 +843,35 @@ xs.tuple2(ys)
 ```
 
 1. Create `ZipStream` with such `Applicative` instance
-	
+
+???
+- combine == zip but what is pure?
+
+---
+# Typeclasses in the wild
+	      
+```tut:reset:silent
+import argonaut.{Json, CodecJson}
+import argonaut.JsonIdentity._
+
+case class Person(name: String, age: Int)
+
+implicit val codec: CodecJson[Person] =  
+  CodecJson.casecodec2(Person.apply, Person.unapply)("name", "age")
+
+val elise = Json.obj(
+    "name" -> "Elise".asJson,
+    "age"  -> 32.asJson
+)
+```
+
+```tut:book
+Person("John", 26).asJson
+
+elise.as[Person]
+```   
 ---
 # Reduce boiler plate with simulacrum
-
-```tut:reset:invisible
-case class Text(label: String, maxLength: Int)
-val text = Text("What is your name?", maxLength = 20)
-```
 	      
 ```tut:silent
 import simulacrum._

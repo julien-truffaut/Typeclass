@@ -19,10 +19,7 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
     "-Ypartial-unification"
   ),
   resolvers += Resolver.sonatypeRepo("releases"),
-  libraryDependencies ++= Seq(
-    "com.github.mpilquist"  %% "simulacrum" % "0.8.0",
-    "com.github.scalaprops" %% "scalaprops" % "0.3.4"
-  ),
+  libraryDependencies += "com.github.scalaprops" %% "scalaprops" % "0.3.4",
   addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
   addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.0")
 )
@@ -46,6 +43,12 @@ lazy val exercise = project
 lazy val slides = project
   .settings(moduleName := "typeclass-slides")
   .settings(baseSettings)
+  .settings(
+      libraryDependencies ++= Seq(
+        "com.github.mpilquist"  %% "simulacrum" % "0.8.0",
+        "io.argonaut"           %% "argonaut"   % "6.2-M3"
+      )
+  )
   .settings(tutSettings)
   .settings(
     tutSourceDirectory := baseDirectory.value / "tut",

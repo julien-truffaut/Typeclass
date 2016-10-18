@@ -870,6 +870,28 @@ Person("John", 26).asJson
 
 elise.as[Person]
 ```   
+
+---
+# Typeclasses in the wild
+	      
+```tut:reset:silent
+import scalaz.concurrent.Task
+import scalaz.syntax.traverse._
+import scalaz.std.list._
+
+case class OrderId(value: String)
+case class Order(id: OrderId, value: Int)
+
+def getOrdersLargerThan(threshold: Int): Task[List[OrderId]] = ???
+def fetchOrderById(id: OrderId): Task[Order] = ???
+
+def orderLargenThan1000: Task[List[Order]] =
+  for {
+    ids    <- getOrdersLargerThan(1000)
+    orders <- ids.traverseU(fetchOrderById)
+  } yield orders
+```
+
 ---
 # Reduce boiler plate with simulacrum
 	      

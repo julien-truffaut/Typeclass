@@ -3,7 +3,7 @@ package typeclass.syntax
 import typeclass.Applicative
 
 object applicative {
-  implicit class ApplicativeOps[F[_], A](fa: F[A])(implicit F: Applicative[F]){
+  implicit class ApplicativeOps[F[_], A](fa: F[A])(implicit ev: Applicative[F]){
     def *>[B](fb: F[B]): F[B] = ???
     def <*[B](fb: F[B]): F[A] = ???
 
@@ -14,7 +14,7 @@ object applicative {
     def tuple3[B, C](fb: F[B], fc: F[C]): F[(A, B, C)] = ???
   }
 
-  implicit class Applicative2Ops[F[_], A, B](fab: F[A => B])(implicit F: Applicative[F]){
+  implicit class Applicative2Ops[F[_], A, B](fab: F[A => B])(implicit ev: Applicative[F]){
     def ap(fa: F[A]): F[B] = ???
   }
 

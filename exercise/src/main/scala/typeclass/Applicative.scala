@@ -20,7 +20,7 @@ object Applicative {
   def apply[F[_]](implicit ev: Applicative[F]): Applicative[F] = ev
 }
 
-case class ApplicativeLaws[F[_]](implicit F: Applicative[F]) {
+case class ApplicativeLaws[F[_]](implicit ev: Applicative[F]) {
   import typeclass.syntax.applicative._
   import typeclass.syntax.functor._
 

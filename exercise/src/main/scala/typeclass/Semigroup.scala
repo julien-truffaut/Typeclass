@@ -8,7 +8,7 @@ object Semigroup {
   def apply[A](implicit ev: Semigroup[A]): Semigroup[A] = ev
 }
 
-case class SemigroupLaws[A](implicit A: Semigroup[A]) {
+case class SemigroupLaws[A](implicit ev: Semigroup[A]) {
   import typeclass.syntax.semigroup._
   import scalaprops.Properties.properties
   import scalaprops.Property.forAll

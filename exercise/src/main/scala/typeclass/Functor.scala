@@ -12,7 +12,7 @@ object Functor {
   def apply[F[_]](implicit ev: Functor[F]): Functor[F] = ev
 }
 
-case class FunctorLaws[F[_]](implicit F: Functor[F]) {
+case class FunctorLaws[F[_]](implicit ev: Functor[F]) {
   import typeclass.syntax.functor._
   import scalaprops.Gen
   import scalaprops.Properties.properties

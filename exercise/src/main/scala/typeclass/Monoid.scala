@@ -11,7 +11,7 @@ object Monoid {
   def apply[A](implicit ev: Monoid[A]): Monoid[A] = ev
 }
 
-case class MonoidLaws[A](implicit A: Monoid[A]) {
+case class MonoidLaws[A](implicit ev: Monoid[A]) {
   import typeclass.syntax.semigroup._
 
   import scalaprops.Properties.properties

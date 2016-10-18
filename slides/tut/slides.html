@@ -847,32 +847,31 @@ xs.tuple2(ys)
 ---
 # Reduce boiler plate with simulacrum
 
-```tut:invisible
+```tut:reset:invisible
 case class Text(label: String, maxLength: Int)
+val text = Text("What is your name?", maxLength = 20)
 ```
 	      
 ```tut:silent
 import simulacrum._
 
-@typeclass trait Label[A]{
-  def getLabel(a: A): String
-  def setLabel(a: A, s: String): A
+@typeclass trait Semigroup[A]{
+  @op("|+|", alias = true) def combine(x: A, y: A): A
 }
-		   
-implicit val labelText: Label[Text] = new Label[Text] {
-  def getLabel(a: Text): String = a.label
-  def setLabel(a: Text, s: String): Text = a.copy(label = s)
+
+implicit val stringSemigroup: Semigroup[String] = new Semigroup[String] {
+   def combine(x: String, y: String): String = x + y
 }
 ```
 
-```tut:invisible
-val text = Text("What is your name?", maxLength = 20)
+```tut:silent
+import Semigroup.ops._
 ```
 
 ```tut:book
-import Label.ops._
-text.getLabel
-text.setLabel("foo")
+Semigroup[String]	      
+"Hello ".combine("World")
+"Hello " |+| "World"
 ```
 
 ---

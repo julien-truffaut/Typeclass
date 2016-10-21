@@ -47,7 +47,8 @@ lazy val slides = project
       libraryDependencies ++= Seq(
         "com.github.mpilquist"  %% "simulacrum"        % "0.8.0",
         "io.argonaut"           %% "argonaut"          % "6.2-M3",
-        "org.scalaz"            %% "scalaz-concurrent" % "7.2.6"
+        "org.scalaz"            %% "scalaz-concurrent" % "7.2.6",
+        "com.chuusai"           %% "shapeless"         % "2.3.2"
       )
   )
   .settings(tutSettings)

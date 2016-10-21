@@ -848,7 +848,28 @@ xs.tuple2(ys)
 - combine == zip but what is pure?
 
 ---
-# Typeclasses in the wild
+# Typeclasses in the wild: Scalaz/Cats Traverse
+	      
+```tut:reset:silent
+import scalaz.concurrent.Task
+import scalaz.syntax.traverse._
+import scalaz.std.list._
+
+case class OrderId(value: String)
+case class Order(id: OrderId, value: Int)
+
+def getOrdersLargerThan(threshold: Int): Task[List[OrderId]] = ???
+def fetchOrderById(id: OrderId): Task[Order] = ???
+
+def orderLargenThan1000: Task[List[Order]] =
+  for {
+    ids    <- getOrdersLargerThan(1000)
+    orders <- ids.traverseU(fetchOrderById)
+  } yield orders
+```
+	      
+---
+# Typeclasses in the wild: Argonaut/Circe Codec
 	      
 ```tut:reset:silent
 import argonaut.{Json, CodecJson}
@@ -872,25 +893,23 @@ elise.as[Person]
 ```   
 
 ---
-# Typeclasses in the wild
+# Typeclasses in the wild: Shapeless Generic
 	      
 ```tut:reset:silent
-import scalaz.concurrent.Task
-import scalaz.syntax.traverse._
-import scalaz.std.list._
+import shapeless._; import syntax.singleton._; import record._
+case class Person(name: String, age: Int, hasSiblings: Boolean)
 
-case class OrderId(value: String)
-case class Order(id: OrderId, value: Int)
-
-def getOrdersLargerThan(threshold: Int): Task[List[OrderId]] = ???
-def fetchOrderById(id: OrderId): Task[Order] = ???
-
-def orderLargenThan1000: Task[List[Order]] =
-  for {
-    ids    <- getOrdersLargerThan(1000)
-    orders <- ids.traverseU(fetchOrderById)
-  } yield orders
+val personGen = LabelledGeneric[Person]		
 ```
+
+```tut:book
+val john = Person("John", 23, hasSiblings = false)
+
+val record = personGen.to(john)
+
+record('age)
+personGen.from(record.updateWith('age)(_ + 10))
+```   
 
 ---
 # Reduce boiler plate with simulacrum

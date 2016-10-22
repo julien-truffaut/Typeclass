@@ -848,6 +848,23 @@ xs.tuple2(ys)
 - combine == zip but what is pure?
 
 ---
+# Typeclasses in the wild: Scalaprops Gen
+
+```tut:silent
+import scalaprops.{Gen, Property}
+```
+
+```tut:book
+Gen[Int].sample()
+Gen[Int].samples(10)
+```
+
+```tut:silent
+def forAll[A1: Gen](f: A1 => Boolean): Property = ???
+def forAll[A1: Gen, A2: Gen](f: (A1, A2) => Boolean): Property = ???	      
+```
+
+---
 # Typeclasses in the wild: Scalaz/Cats Traverse
 	      
 ```tut:reset:silent

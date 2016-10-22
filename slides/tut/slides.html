@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title</title>
+    <title>Typeclass 101: ad hoc polymorphism in scala</title>
     <meta charset="utf-8">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -28,8 +28,15 @@ class: center, middle
 # Typeclass 101: ad hoc polymorphism in scala
 Julien Truffaut • `@JulienTruffaut`
 
-???
+```
 
+
+
+```
+
+.center[![sponsors](footer.png)]
+
+???
 - notes here
 
 ---
@@ -61,7 +68,7 @@ cd Typeclass
 sbt clean answer/test
 ```
 
-.center[![tests](scalaprop.png)]
+.center[![tests-output](scalaprop.png)]
 
 ---
 
@@ -76,14 +83,17 @@ def plus[A](a1: Long, a2: Long): Long = ???
 ```tut:book
 1 + 2
 3.2 + 4.0
-
-List(1,2,3).map(_ + 1)
-Vector(1,2,3).map(_ + 1)
 ```
+
+## Paramertric polymorhism / Generics
+
+```tut:silent
+def take[A](xs: List[A]): List[A] = ???
+```
+
 
 ???
 - overloading a function
-- parametric polymorphism: `def take[A](xs: List[A]): List[A]`
 
 ---
 
@@ -96,10 +106,11 @@ case class Select(label: String, options: List[String]) extends Input
 
 def setLabel[A](a: A, s: String): A = ???
 ```
-
+???
+- `A` in `setLabel` need some constraints
 ---
 
-# Inheritance: OOP implementation
+# Subtyping
 
 ```tut:silent
 trait Input {
@@ -122,8 +133,7 @@ select.setLabel("foo")
 ```
 
 ---
-
-# Inheritance: OOP implementation
+# Subtyping
 
 ```tut:silent
 trait Input {

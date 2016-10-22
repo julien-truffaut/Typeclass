@@ -101,9 +101,13 @@ def take[A](xs: List[A]): List[A] = ???
 
 ```tut:silent
 trait Input
-case class Text(label: String, maxLength: Int) extends Input
-case class Select(label: String, options: List[String]) extends Input
 
+case class Text(label: String, maxLength: Int) extends Input
+
+case class Select(label: String, options: List[String]) extends Input
+```
+
+```tut:silent
 def setLabel[A](a: A, s: String): A = ???
 ```
 ???
@@ -116,9 +120,11 @@ def setLabel[A](a: A, s: String): A = ???
 trait Input {
   def setLabel(s: String): Input
 }
+
 case class Text(label: String, maxLength: Int) extends Input {
   def setLabel(s: String): Input = copy(label = s)
 }
+
 case class Select(label: String, options: List[String]) extends Input {
   def setLabel(s: String): Input = copy(label = s)
 }
@@ -139,16 +145,18 @@ select.setLabel("foo")
 trait Input {
   def setLabel(s: String): Input
 }
+
 case class Text(label: String, maxLength: Int) extends Input {
   def setLabel(s: String): Input = copy(label = s)
 }
+
 case class Select(label: String, options: List[String]) extends Input {
   def setLabel(s: String): Input = copy(label = s)
 }
 ```
 
 ```tut:fail
-def _setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
+def setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
 ```
 
 ---
@@ -159,24 +167,28 @@ def _setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
 trait Input[A <: Input[A]] {
   def setLabel(s: String): A
 }
+		 
 case class Text(label: String, maxLength: Int) extends Input[Text] {
   def setLabel(s: String): Text = copy(label = s)
 }
+		 
 case class Select(label: String, options: List[String]) extends Input[Select] {
   def setLabel(s: String): Select = copy(label = s)
 }
 
-def _setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
+def setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
 ```
+		  
+???
+- this technique is called F-bounded polymorphism
+
+--
 
 ```tut:silent
 case class Radio(label: String, options: List[String]) extends Input[Text] {
   def setLabel(s: String): Text = Text(s, 10) // WTF
 }
 ```
-		   
-???
-- this technique is called F-bounded polymorphism
 
 ---
 
@@ -186,14 +198,16 @@ case class Radio(label: String, options: List[String]) extends Input[Text] {
 trait Input[A <: Input[A]] { self: A =>
   def setLabel(s: String): A
 }
+		  
 case class Text(label: String, maxLength: Int) extends Input[Text] {
   def setLabel(s: String): Text = copy(label = s)
 }
+		  
 case class Select(label: String, options: List[String]) extends Input[Select] {
   def setLabel(s: String): Select = copy(label = s)
 }
 
-def _setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
+def setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
 ```
 
 ```tut:fail
@@ -359,7 +373,7 @@ object TextTest extends Scalaprops {
 1. typeclasses are encoded using a `trait` with one or more type parameters
 2. values of the typeclass (instances) are marked as `implicit`
 3. syntax to extend a class with methods from the typeclass
-4. laws to define invariants of the typeclass and generate tests 
+4. laws to define invariants of the typeclass methods and generate tests 
 
 ???
 - Typeclasses are not a 1st class construct means they are derived from other constructs 
@@ -964,6 +978,22 @@ Semigroup[String]
 ```
 
 ---
+# Other typeclass encoding
+
+```tut:silent
+abstract class Semigroup[A]{
+  def combine(x: A, y: A): A
+}
+
+abstract class Monoid[A]{
+  def semigroup: Semigroup[A]
+  def empty: A
+}
+```
+???
+- proposed by alois cochard in scato and scalaz, maybe in cats
+
+---
 class: center, middle
 
 # Thanks!
@@ -975,8 +1005,14 @@ Code and slides at `julien-truffaut/Typeclass` on GitHub
 
 # References
 
-- [tut](https://github.com/tpolecat/tut), [remark.js](https://github.com/gnab/remark), tpolecat [presentation]((https://github.com/tpolecat/cofree/blob/master/tut/slides.html)) I copied from
-- [Returning the "Current" Type in Scala](https://tpolecat.github.io/2015/04/29/f-bounds.html) by Rob Norris
+- [remark.js](https://github.com/gnab/remark)
+- [tut](https://github.com/tpolecat/tut)
+- [presentation.g8](https://github.com/julien-truffaut/presentation.g8)
+- [kind-projector](https://github.com/non/kind-projector)
+- [scalaz](https://github.com/scalaz/scalaz) [cats](https://github.com/typelevel/cats)
+- [argonaut](https://github.com/argonaut-io/argonaut) [circe](https://github.com/travisbrown/circe)
+- [scato](https://github.com/aloiscochard/scato)
+- [Returning the Current Type in Scala](https://tpolecat.github.io/2015/04/29/f-bounds.html) by Rob Norris
 - [Type Classes as Objects and Implicits](http://ropas.snu.ac.kr/~bruno/papers/TypeClasses.pdf) by Oliveira, Bruno; Adriaan Moors; Martin Odersky (2010)
 - [Where does Scala look for implicits?](http://docs.scala-lang.org/tutorials/FAQ/finding-implicits.html)
 

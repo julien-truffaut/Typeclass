@@ -54,7 +54,7 @@ lazy val slides = project
   .settings(tutSettings)
   .settings(
     tutSourceDirectory := baseDirectory.value / "tut",
-    tutTargetDirectory := baseDirectory.value / "tut-out"
+    tutTargetDirectory := baseDirectory.value / "../docs"
   ).dependsOn(answer)
 
 lazy val testSettings = Seq(

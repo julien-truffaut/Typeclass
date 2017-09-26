@@ -19,9 +19,8 @@
   <body>
     <textarea id="source">
 
-```tut:invisible
 
-```
+
 
 class: center, middle
 
@@ -70,12 +69,16 @@ Repository is on github `julien-truffaut/Typeclass`
 - it will not be needed once 2.12 or 2.11.9 is released
 --
 
-```tut:book
+```scala
 2 + 2 
+// res0: Int = 4
 ```
 
-```tut:fail
-"Hello World".foo
+```scala
+scala> "Hello World".foo
+<console>:13: error: value foo is not a member of String
+       "Hello World".foo
+                     ^
 ```
 
 ???
@@ -86,20 +89,23 @@ Repository is on github `julien-truffaut/Typeclass`
 
 # Ad hoc polymorphism?
 
-```tut:silent
+```scala
 def plus[A](a1: A, a2: A): A = ???
 def plus[A](a1: Int, a2: Int): Int = ???
 def plus[A](a1: Long, a2: Long): Long = ???
 ```
 
-```tut:book
+```scala
 1 + 2
+// res2: Int = 3
+
 3.2 + 4.0
+// res3: Double = 7.2
 ```
 
 ## Paramertric polymorhism / Generics
 
-```tut:silent
+```scala
 def headOption[A](xs: List[A]): Option[A] = ???
 ```
 
@@ -111,7 +117,7 @@ def headOption[A](xs: List[A]): Option[A] = ???
 
 # Polymorphism example
 
-```tut:silent
+```scala
 trait Input
 
 case class Text(label: String, maxLength: Int) extends Input
@@ -119,7 +125,7 @@ case class Text(label: String, maxLength: Int) extends Input
 case class Select(label: String, options: List[String]) extends Input
 ```
 
-```tut:silent
+```scala
 def setLabel[A](a: A, s: String): A = ???
 ```
 ???
@@ -128,7 +134,7 @@ def setLabel[A](a: A, s: String): A = ???
 
 # Subtyping
 
-```tut:silent
+```scala
 trait Input {
   def setLabel(s: String): Input
 }
@@ -145,15 +151,18 @@ val text = Text("What is your name?", maxLength = 20)
 val select = Select("Favorite language?", List("scala", "haskell", "purescript"))
 ```
 
-```tut:book
+```scala
 text.setLabel("foo")
+// res9: Input = Text(foo,20)
+
 select.setLabel("foo")
+// res10: Input = Select(foo,List(scala, haskell, purescript))
 ```
 
 ---
 # Subtyping
 
-```tut:silent
+```scala
 trait Input {
   def setLabel(s: String): Input
 }
@@ -168,15 +177,20 @@ case class Select(label: String, options: List[String]) extends Input {
 ```
 --
 
-```tut:fail
-def setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
+```scala
+scala> def setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
+<console>:13: error: type mismatch;
+ found   : Input
+ required: A
+       def setLabel[A <: Input](a: A, s: String): A = a.setLabel(s)
+                                                                ^
 ```
 
 ---
 
 # F-Bounded
 
-```tut:silent
+```scala
 trait Input[A <: Input[A]] {
   def setLabel(s: String): A
 }
@@ -197,7 +211,7 @@ def setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
 
 --
 
-```tut:silent
+```scala
 case class Radio(label: String, options: List[String]) extends Input[Text] {
   def setLabel(s: String): Text = Text(s, 10) // WTF
 }
@@ -207,7 +221,7 @@ case class Radio(label: String, options: List[String]) extends Input[Text] {
 
 # Self type
 
-```tut:silent
+```scala
 trait Input[A <: Input[A]] { self: A =>
   def setLabel(s: String): A
 }
@@ -225,16 +239,20 @@ def setLabel[A <: Input[A]](a: A, s: String): A = a.setLabel(s)
 
 --
 		  
-```tut:fail
-case class Radio(label: String, options: List[String]) extends Input[Text] {
-  def setLabel(s: String): Text = Text(s, 10)
-}
+```scala
+scala> case class Radio(label: String, options: List[String]) extends Input[Text] {
+     |   def setLabel(s: String): Text = Text(s, 10)
+     | }
+<console>:15: error: illegal inheritance;
+ self-type Radio does not conform to Input[Text]'s selftype Text
+       case class Radio(label: String, options: List[String]) extends Input[Text] {
+                                                                      ^
 ```
 
 ---
 # Self type
 
-```tut:silent
+```scala
 abstract class Radio(labe: String, options: List[String]) extends Input[Radio]
 
 case class YesNo(label: String) extends Radio(label, List("Yes", "No")) {
@@ -261,7 +279,7 @@ class: center, middle
 ---
 # 1. Trait and companion object
 
-```tut:silent
+```scala
 trait Label[A] {
   def getLabel(a: A): String
   def setLabel(a: A, s: String): A
@@ -274,7 +292,7 @@ trait Label[A] {
 
 --
 
-```tut:silent
+```scala
 object Label {
   def apply[A](implicit ev: Label[A]): Label[A] = ev
 }
@@ -289,7 +307,7 @@ Label[A] == implicitly[Label[A]]
 ---
 # 2. Instances
 
-```tut:silent
+```scala
 implicit val labelText: Label[Text] = new Label[Text] {
   def getLabel(a: Text): String = a.label
   def setLabel(a: Text, s: String): Text = a.copy(label = s)
@@ -301,13 +319,18 @@ Instances are generally located in:
 2. companion object of the typeclass (e.g. `Label`) or
 3. an object in a dedicated package (e.g. `typeclass.std.int`)
 
-```tut:book
+```scala
 val text = Text("What is your name?", maxLength = 20)
-		   
+// text: Text = Text(What is your name?,20)
+
 implicitly[Label[Text]].getLabel(text)
+// res21: String = What is your name?
 
 Label[Text].getLabel(text)
+// res22: String = What is your name?
+
 Label[Text].setLabel(text, "foo")
+// res23: Text = Text(foo,20)
 ```
 
 ???
@@ -317,7 +340,7 @@ Label[Text].setLabel(text, "foo")
 ---
 # 3. Syntax
 
-```tut:silent
+```scala
 implicit class LabelOps[A](a: A)(implicit ev: Label[A]){
   def getLabel: String = ev.getLabel(a)
   def setLabel(s: String): A = ev.setLabel(a, s)
@@ -329,11 +352,15 @@ Syntax classes are generally located in:
 2. an object in a syntax package (e.g. `typeclass.syntax.int`)
 		   
 
-```tut:book
+```scala
 Label[Text].getLabel(text)
-		   
+// res24: String = What is your name?
+
 text.getLabel
+// res25: String = What is your name?
+
 text.setLabel("foo")
+// res26: Text = Text(foo,20)
 ```
 
 ???
@@ -344,7 +371,7 @@ text.setLabel("foo")
 ---
 # 4. Laws
 
-```tut:silent
+```scala
 import scalaprops.{Gen, Properties}
 import scalaprops.Properties.properties
 import scalaprops.Property
@@ -374,7 +401,7 @@ case class LabelLaws[A](implicit A: Label[A]) {
 ---
 # 4. Laws
 
-```tut:silent
+```scala
 import scalaprops.Scalaprops
 
 object TextTest extends Scalaprops {
@@ -407,7 +434,7 @@ object TextTest extends Scalaprops {
 ---
 # Semigroup
 
-```tut:silent
+```scala
 trait Semigroup[A] {
   def combine(x: A, y: A): A
 }
@@ -427,26 +454,33 @@ run tests using: `sbt exercise/test`
 ---
 # Semigroup examples
 	 
-```tut:silent
+```scala
 import typeclass.syntax.semigroup._
 import typeclass.std.int._
 import typeclass.std.option._
 ```
 
-```tut:book
+```scala
 5.combine(2)
+// res29: Int = 7
+
 Option(5).combine(Option(2))
+// res30: Option[Int] = Some(7)
 ```
 
-```tut:fail
-"Hello".combine(" World")
+```scala
+scala> "Hello".combine(" World")
+<console>:36: error: value combine is not a member of String
+       "Hello".combine(" World")
+               ^
 ```
-```tut:silent
+```scala
 import typeclass.std.string._
 ```
 
-```tut:book
+```scala
 "Hello".combine(" World")
+// res32: String = Hello World
 ```
 
 ---
@@ -457,24 +491,33 @@ class: center, middle
 ---
 # Implicits: type dictionary
 
-```tut:silent
+```scala
 implicit val i: Int  = 2 
 implicit val l: Long = 3L
 ```
 
-```tut:book
+```scala
 implicitly[Int]
+// res33: Int = 2
+
 implicitly[Long]
+// res34: Long = 3
 ```
 
 --
 
-```tut:silent
+```scala
 implicit val i2: Int = 0
 ```
 
-```tut:fail
-implicitly[Int]
+```scala
+scala> implicitly[Int]
+<console>:42: error: ambiguous implicit values:
+ both value i of type => Int
+ and value i2 of type => Int
+ match expected type Int
+       implicitly[Int]
+                 ^
 ```
 
 ???
@@ -483,11 +526,10 @@ implicitly[Int]
 ---
 # Implicit parameters
 
-```tut:invisible
-import typeclass.Semigroup
-```	 
+
+
 	 
-```tut:silent
+```scala
 def plus3[A](a1: A, a2: A, a3: A)(implicit ev: Semigroup[A]): A =
   ev.combine(ev.combine(a1, a2), a3)
 
@@ -498,8 +540,9 @@ def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
   a1.combine(a2).combine(a3)
 ```
 	
-```tut:book
+```scala
 plus3(1, 2, 3)
+// res38: Int = 6
 ```
 ???
 - scope:
@@ -512,7 +555,7 @@ plus3(1, 2, 3)
 ---
 # Implicit conversion
 
-```tut:silent
+```scala
 case class MyString(s: String){
   def isPalindrome: Boolean = s == s.reverse
 }
@@ -520,23 +563,28 @@ case class MyString(s: String){
 implicit def stringToMyString(s: String): MyString = new MyString(s)
 ```
 
-```tut:silent
+```scala
 implicit class MyString2(s: String){
   def shout: String = s.map(_.toUpper)
 }
 ```
 
-```tut:book
+```scala
 "hello".isPalindrome
+// res40: Boolean = false
+
 "kayak".isPalindrome
+// res41: Boolean = true
+
 "lalalala".shout	 
+// res42: String = LALALALA
 ```
 ???
 - essential for syntax	 
 ---
 # Instance uniqueness
 	 
-```tut:silent
+```scala
 implicit val additiveLong: Semigroup[Long] = new Semigroup[Long]{
   def combine(x: Long, y: Long): Long = x + y
 }
@@ -546,17 +594,22 @@ implicit val multiplicativeLong: Semigroup[Long] = new Semigroup[Long]{
 }
 ```
 
-```tut:fail
-implicitly[Semigroup[Long]]
+```scala
+scala> implicitly[Semigroup[Long]]
+<console>:50: error: ambiguous implicit values:
+ both value additiveLong of type => typeclass.Semigroup[Long]
+ and value multiplicativeLong of type => typeclass.Semigroup[Long]
+ match expected type typeclass.Semigroup[Long]
+       implicitly[Semigroup[Long]]
+                 ^
 ```
 ---
 # Mult newtype
 
-```tut:invisible
-import typeclass.Semigroup
-```
 
-```tut:silent
+
+
+```scala
 case class Mult(value: Int)
 
 implicit val multSemigroup: Semigroup[Mult] = new Semigroup[Mult]{
@@ -565,9 +618,12 @@ implicit val multSemigroup: Semigroup[Mult] = new Semigroup[Mult]{
 }
 ```
 
-```tut:book
+```scala
 Mult(2).combine(Mult(5))
+// res46: Mult = Mult(10)
+
 2.combine(5)
+// res47: Int = 7
 ```
 	 
 ---
@@ -578,16 +634,21 @@ case class First[A](value: Option[A])
 case class Last[A](value: Option[A])
 ```
 
-```tut:invisible
-import typeclass.data.{First, Last}
-```
+
+
 	 
-```tut:book
+```scala
 Option(1).combine(Option(2))
+// res48: Option[Int] = Some(3)
+
 First(Option(1)).combine(First(Option(2)))
+// res49: typeclass.data.First[Int] = First(Some(1))
+
 Last(Option(1)).combine(Last(Option(2)))
+// res50: typeclass.data.Last[Int] = Last(Some(2))
 
 First(Option.empty[Int]).combine(First(Some(2)))
+// res51: typeclass.data.First[Int] = First(Some(2))
 ```
 	 
 1. Implement a `Semigroup` instance for `First`, `Last` in `typeclass.data`
@@ -598,7 +659,7 @@ First(Option.empty[Int]).combine(First(Some(2)))
 ---
 # Monoid
 
-```tut:silent
+```scala
 trait Monoid[A] extends Semigroup[A] {
   def empty: A
 
@@ -621,15 +682,20 @@ combine(empty, a) == a
 ---
 # Monoid examples
 
-```tut:silent
+```scala
 import typeclass.syntax.monoid._
 import typeclass.std.list._		  
 ```
 
-```tut:book
+```scala
 List(1,2,3).ifEmpty("Hello")("World")
+// res52: String = World
+
 0.ifEmpty(10)(5)
+// res53: Int = 10
+
 Option.empty.isEmpty
+// res54: Boolean = true
 ```
 
 ???
@@ -638,23 +704,26 @@ Option.empty.isEmpty
 ---
 # Monoid examples
 
-```tut:reset:invisible
-import typeclass.{Semigroup, Monoid}
-import typeclass.data._
-import typeclass.syntax.semigroup._
-import typeclass.std.int._		   
-```
 
-```tut:silent
+
+
+```scala
 def foldMap[A, B: Monoid](xs: List[A])(f: A => B): B =
   xs.map(f).foldLeft(Monoid[B].empty)(_.combine(_))	
 ```
 
-```tut:book
+```scala
 foldMap(List(1,2,3,4))(identity)
+// res0: Int = 10
+
 foldMap(List(1,2,3,4))(Mult(_))
+// res1: typeclass.data.Mult = Mult(24)
+
 foldMap(List(1,2,3,4))(i => First(Option(i)))
+// res2: typeclass.data.First[Int] = First(Some(1))
+
 foldMap(List(1,2,3,4))(i => Last(Option(i)))
+// res3: typeclass.data.Last[Int] = Last(Some(4))
 ```
 ???
 - `Monoid` are generally used with `fold` see typeclass `Foldable`	
@@ -664,7 +733,7 @@ foldMap(List(1,2,3,4))(i => Last(Option(i)))
 ---
 # Monoid
 
-```tut:silent
+```scala
 trait Monoid[A] extends Semigroup[A] {
   def empty: A
 
@@ -683,7 +752,7 @@ trait Monoid[A] extends Semigroup[A] {
 ---
 # NonEmptyList
 
-```tut:silent
+```scala
 case class NonEmptyList[A](head: A, tail: List[A])
 
 implicit def nelMonoid[A]: Monoid[NonEmptyList[A]] =
@@ -717,7 +786,7 @@ scala.Function1's kind is F[-A1,+A2]
 
 --
 
-```tut:silent
+```scala
 trait Semigroup[A]{}
 trait Functor[F[_]]{}
 
@@ -725,14 +794,17 @@ new Semigroup[Int]{}
 new Functor[List]{}
 ```
 
-```tut:fail
-new Functor[Int]{}
+```scala
+scala> new Functor[Int]{}
+<console>:28: error: Int takes no type parameters, expected: one
+       new Functor[Int]{}
+                   ^
 ```
 
 ---
 # Functor Exercices
 
-```tut:silent
+```scala
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
 
@@ -755,7 +827,7 @@ trait Functor[F[_]] {
 ---
 # Validation
 
-```tut:silent
+```scala
 sealed trait Validation[E, A]
 case class Success[E, A](value: A) extends Validation[E, A]
 case class Failure[E, A](value: E) extends Validation[E, A]
@@ -781,7 +853,7 @@ implicit def validationFunctor[E]: Functor[Validation[E, ?]] =
 ---
 # Applicative
 
-```tut:silent
+```scala
 trait Applicative[F[_]] extends Functor[F]{
   def pure[A](a: A): F[A]
   def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
@@ -805,7 +877,7 @@ trait Applicative[F[_]] extends Functor[F]{
 ---
 # Applicative examples
 
-```tut:silent
+```scala
 import typeclass.syntax.applicative._
 import typeclass.std.list._
 
@@ -814,19 +886,23 @@ val ys = List(2,4)
 val fs = List[Int => Int](_ + 1, _ * 2, _ - 1)
 ```
 
-```tut:book
+```scala
 fs.ap(xs)
+// res14: List[Int] = List(2, 6, 11, 2, 10, 20, 0, 4, 9)
+
 xs.map2(ys)(_ + _)
+// res15: List[Int] = List(3, 5, 7, 9, 12, 14)
+
 xs.tuple2(ys)
+// res16: List[(Int, Int)] = List((1,2), (1,4), (5,2), (5,4), (10,2), (10,4))
 ```
 ---
 # Applicative examples
 
-```tut:invisible
-import typeclass.Applicative
-```
 
-```tut:silent
+
+
+```scala
 import typeclass.data.{Validation, NonEmptyList}
 import typeclass.data.Validation.{successNel, failureNel}
 import typeclass.syntax.applicative._
@@ -844,16 +920,21 @@ def person(name: String, age: Int): ValidationNel[String, Person] =
   capitalise(name).map2(positive(age))(Person(_, _))
 ```
 
-```tut:book
+```scala
 person("John", 24)
+// res21: ValidationNel[String,Person] = Success(Person(John,24))
+
 person("john", 24)
+// res22: ValidationNel[String,Person] = Failure(Nel(john is not capitalised))
+
 person("john", -2)
+// res23: ValidationNel[String,Person] = Failure(Nel(john is not capitalised, -2 is not positive))
 ```
 
 ---
 # Applicative exercices
 
-```tut:silent
+```scala
 trait Applicative[F[_]] extends Functor[F]{
   def pure[A](a: A): F[A]
   def ap[A, B](fab: F[A => B], fa: F[A]): F[B]
@@ -879,7 +960,7 @@ trait Applicative[F[_]] extends Functor[F]{
 ---
 # ZipStream
 
-```tut:silent
+```scala
 import typeclass.data.ZipStream
 	  
 val xs = ZipStream(1,5,10)
@@ -887,10 +968,15 @@ val ys = ZipStream(2,4)
 val fs = ZipStream((_: Int) + 1, (_: Int) * 2, (_: Int) - 1)
 ```
 
-```tut:book
+```scala
 fs.ap(xs)
+// res25: typeclass.data.ZipStream[Int] = ZipStream(2, 10, 9)
+
 xs.map2(ys)(_ + _)
+// res26: typeclass.data.ZipStream[Int] = ZipStream(3, 9)
+
 xs.tuple2(ys)
+// res27: typeclass.data.ZipStream[(Int, Int)] = ZipStream((1,2), (5,4))
 ```
 
 1. Create `ZipStream` with such `Applicative` instance
@@ -901,16 +987,19 @@ xs.tuple2(ys)
 ---
 # Typeclasses in the wild: Scalaprops Gen
 
-```tut:silent
+```scala
 import scalaprops.{Gen, Property}
 ```
 
-```tut:book
+```scala
 Gen[Int].sample()
+// res28: Int = -1
+
 Gen[Int].samples(10)
+// res29: List[Int] = List(-1, 2147483646, -1579004998, 2147483647, -1944672731, 809094426, -1177512687, 2084672536, 609397212, 1811450929, -361913170, 1551745920, -283496851, -1, -2147483647, 1812852786, 735241234, -2147483647, 1359573808, -547914046, 640439652, 1, 1361931891, 147944788, 540721923, 902841100, -879609714, 802611720, 2103522059, 1913778154, -1519074049, -1263689967, -1481342794, -1529176048, 1958646067, -971018538, -529322872, 76338300, -769482973, -468566954, -174842015, 595387438, 988512770, -817183891, 1427854500, 1045931779, -2147483647, 1503168825, -650825878, -193198051, 2147483647, 2147483647, -726585505, -1375163528, -1057725500, 893645500, 1736062366, 0, -2147483647, -283421978, 663307952, 2016017442, 51119001, 1668894615, -311415874, 1336658413, 2147483647, -17094...
 ```
 
-```tut:silent
+```scala
 def forAll[A1: Gen](f: A1 => Boolean): Property = ???
 
 def forAll[A1: Gen, A2: Gen](f: (A1, A2) => Boolean): Property = ???	      
@@ -919,7 +1008,7 @@ def forAll[A1: Gen, A2: Gen](f: (A1, A2) => Boolean): Property = ???
 ---
 # Typeclasses in the wild: Scalaz/Cats Traverse
 	      
-```tut:reset:silent
+```scala
 import scalaz.concurrent.Task
 import scalaz.syntax.traverse._
 import scalaz.std.list._
@@ -940,7 +1029,7 @@ def hugeOrders: Task[List[Order]] =
 ---
 # Typeclasses in the wild: Argonaut Codec
 	      
-```tut:reset:silent
+```scala
 import argonaut.{Json, CodecJson}
 import argonaut.JsonIdentity._
 
@@ -955,9 +1044,12 @@ val elise = Json.obj(
 )
 ```
 
-```tut:book
+```scala
 Person("John", 26).asJson
+// res3: argonaut.Json = {"name":"John","age":26}
+
 elise.as[Person]
+// res4: argonaut.DecodeResult[Person] = DecodeResult(Right(Person(Elise,32)))
 ```   
 ???
 - same for circe
@@ -965,26 +1057,31 @@ elise.as[Person]
 ---
 # Typeclasses in the wild: Shapeless Generic
 	      
-```tut:reset:silent
+```scala
 import shapeless._; import syntax.singleton._; import record._
 case class Person(name: String, age: Int, hasSiblings: Boolean)
 
 val personGen = LabelledGeneric[Person]		
 ```
 
-```tut:book
+```scala
 val john = Person("John", 23, hasSiblings = false)
+// john: Person = Person(John,23,false)
 
 val record = personGen.to(john)
+// record: personGen.Repr = John :: 23 :: false :: HNil
 
 record('age)
+// res1: Int = 23
+
 personGen.from(record.updateWith('age)(_ + 10))
+// res2: Person = Person(John,33,false)
 ```   
 
 ---
 # Reduce boiler plate with simulacrum
 	      
-```tut:silent
+```scala
 import simulacrum._
 
 @typeclass trait Semigroup[A]{
@@ -996,20 +1093,25 @@ implicit val stringSemigroup: Semigroup[String] = new Semigroup[String] {
 }
 ```
 
-```tut:silent
+```scala
 import Semigroup.ops._
 ```
 
-```tut:book
+```scala
 Semigroup[String]	      
+// res5: Semigroup[String] = $anon$1@5ca976d1
+
 "Hello ".combine("World")
+// res6: String = Hello World
+
 "Hello " |+| "World"
+// res7: String = Hello World
 ```
 
 ---
 # Other typeclass encoding
 
-```tut:silent
+```scala
 abstract class Semigroup[A]{
   def combine(x: A, y: A): A
 }

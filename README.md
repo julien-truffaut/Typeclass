@@ -6,7 +6,7 @@ Workshop about typeclasses in scala
 
 
 ```
-sbt slides/tut     // to generate the slides in slides/tut-out
+sbt slides/tut     // to generate the slides in docs
 
 sbt answer/test    // to run the tests in the answer module
 

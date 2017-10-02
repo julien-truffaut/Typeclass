@@ -2,7 +2,7 @@ package typeclass.data
 
 import typeclass.{ApplicativeLaws, FunctorLaws}
 import typeclass.Prelude._
-import typeclass.std.list._
+import typeclass.instances.list._
 
 import scalaprops.Scalaprops
 

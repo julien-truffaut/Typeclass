@@ -1,7 +1,7 @@
 package typeclass.data
 
 import typeclass.FunctorLaws
-import typeclass.std.list._
+import typeclass.instances.list._
 
 import scalaprops.Scalaprops
 

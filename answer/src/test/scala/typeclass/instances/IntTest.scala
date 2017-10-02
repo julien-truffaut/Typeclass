@@ -1,7 +1,7 @@
-package typeclass.std
+package typeclass.instances
 
 import typeclass.MonoidLaws
-import typeclass.std.int._
+import typeclass.instances.int._
 
 import scalaprops.Scalaprops
 

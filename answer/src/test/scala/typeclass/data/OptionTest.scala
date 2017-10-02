@@ -1,7 +1,7 @@
 package typeclass.data
 
-import typeclass.std.option._
-import typeclass.std.string._
+import typeclass.instances.option._
+import typeclass.instances.string._
 import typeclass.{MonadLaws, MonoidLaws}
 
 import scalaprops.{Gen, Scalaprops}

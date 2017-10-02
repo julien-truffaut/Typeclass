@@ -300,7 +300,7 @@ implicit val labelText: Label[Text] = new Label[Text] {
 Instances are generally located in:
 1. companion object of the type (e.g. `Text`) or
 2. companion object of the typeclass (e.g. `Label`) or
-3. an object in a dedicated package (e.g. `typeclass.std.int`)
+3. an object in a dedicated package (e.g. `typeclass.instances.int`)
 
 ```tut:book
 val text = Text("What is your name?", maxLength = 20)
@@ -416,7 +416,7 @@ trait Semigroup[A] {
 	 
 1. Implement `SemigroupOps` in `typeclass.syntax.semigroup`
 2. Implement associative law in `SemigroupLaws`: `(a + b) + c == a + (b + c)` 
-3. Implement an instance of `Semigroup` for `String`, `Int`, `List`, `Option` in `typeclass.std`
+3. Implement an instance of `Semigroup` for `String`, `Int`, `List`, `Option` in `typeclass.instances`
 
 run tests using: `sbt exercise/test`
 
@@ -430,8 +430,8 @@ run tests using: `sbt exercise/test`
 	 
 ```tut:silent
 import typeclass.syntax.semigroup._
-import typeclass.std.int._
-import typeclass.std.option._
+import typeclass.instances.int._
+import typeclass.instances.option._
 ```
 
 ```tut:book
@@ -443,7 +443,7 @@ Option(5).combine(Option(2))
 "Hello".combine(" World")
 ```
 ```tut:silent
-import typeclass.std.string._
+import typeclass.instances.string._
 ```
 
 ```tut:book
@@ -624,7 +624,7 @@ combine(empty, a) == a
 
 ```tut:silent
 import typeclass.syntax.monoid._
-import typeclass.std.list._		  
+import typeclass.instances.list._
 ```
 
 ```tut:book
@@ -643,7 +643,7 @@ Option.empty.isEmpty
 import typeclass.{Semigroup, Monoid}
 import typeclass.data._
 import typeclass.syntax.semigroup._
-import typeclass.std.int._		   
+import typeclass.instances.int._
 ```
 
 ```tut:silent
@@ -678,7 +678,7 @@ trait Monoid[A] extends Semigroup[A] {
 2. Write `MonoidOps` in `typeclass.syntax.monoid`
 3. Implement left identity law in `MonoidLaws`: `empty.combine(a) == a`
 4. Implement right identity law in `MonoidLaws`: `a.combine(empty) == a`
-5. Implement an instance of `Monoid` for `String`, `Int`, `List`, `Option` in `typeclass.std`
+5. Implement an instance of `Monoid` for `String`, `Int`, `List`, `Option` in `typeclass.instances`
 6. Implement an instance of `Monoid` for `Mult`, `First`, `Last` in `typeclass.data`
 
 ---
@@ -747,7 +747,7 @@ trait Functor[F[_]] {
 2. Write `FunctorOps` in `typeclass.syntax.functor`
 3. Implement map identity law in `FunctorLaws`: `fa.map(id) == fa`
 4. Implement map fusion law in `FunctorLaws`: `fa.map(f).map(g) == fa.map(g . f)`
-5. Implement an instance of `Functor` for `List`, `Option` in `typeclass.std`
+5. Implement an instance of `Functor` for `List`, `Option` in `typeclass.instances`
 6. Implement an instance of `Functor` for `NonEmptyList` in `typeclass.data`
 
 ???
@@ -808,7 +808,7 @@ trait Applicative[F[_]] extends Functor[F]{
 
 ```tut:silent
 import typeclass.syntax.applicative._
-import typeclass.std.list._
+import typeclass.instances.list._
 
 val xs = List(1,5,10)
 val ys = List(2,4)
@@ -874,7 +874,7 @@ trait Applicative[F[_]] extends Functor[F]{
 3. Implement lift function law in `ApplicativeLaws`: `ap(pure f, pure a) == pure f(a)`
 4. Implement ap id law in `ApplicativeLaws`: `ap(pure id, fa) == fa`
 5. Implement map consistency law in `ApplicativeLaws`
-6. Implement an instance of `Applicative` for `List`, `Option` in `typeclass.std`
+6. Implement an instance of `Applicative` for `List`, `Option` in `typeclass.instances`
 7. Implement an instance of `Applicative` for `NonEmptyList` and `Validation` in `typeclass.data`
 
 ---

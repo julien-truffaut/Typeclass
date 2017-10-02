@@ -1,4 +1,4 @@
-package typeclass.std
+package typeclass.instances
 
 import typeclass.{Monad, Monoid}
 

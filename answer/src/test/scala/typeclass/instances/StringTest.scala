@@ -1,6 +1,7 @@
-package typeclass.std
+package typeclass.instances
 
-import typeclass.SemigroupLaws
+import typeclass.MonoidLaws
+import typeclass.instances.string._
 
 import scalaprops.{Gen, Scalaprops}
 
@@ -8,6 +9,6 @@ object StringTest extends Scalaprops {
 
   implicit val genString: Gen[String] = Gen.asciiString
 
-//  val semigroup = SemigroupLaws[String].all
+  val monoid = MonoidLaws[String].all
 
 }

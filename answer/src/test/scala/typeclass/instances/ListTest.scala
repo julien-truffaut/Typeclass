@@ -1,8 +1,8 @@
-package typeclass.std
+package typeclass.instances
 
 import typeclass.{MonadLaws, MonoidLaws}
-import typeclass.std.int._
-import typeclass.std.list._
+import typeclass.instances.int._
+import typeclass.instances.list._
 
 import scalaprops.{Param, Scalaprops}
 

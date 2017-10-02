@@ -90,17 +90,18 @@ scala> "Hello World".foo
 # Ad hoc polymorphism?
 
 ```scala
+def plus(a1: Int, a2: Int): Int = ???
+def plus(a1: Long, a2: Long): Long = ???
+
 def plus[A](a1: A, a2: A): A = ???
-def plus[A](a1: Int, a2: Int): Int = ???
-def plus[A](a1: Long, a2: Long): Long = ???
 ```
 
 ```scala
 1 + 2
-// res2: Int = 3
+// res3: Int = 3
 
 3.2 + 4.0
-// res3: Double = 7.2
+// res4: Double = 7.2
 ```
 
 ## Paramertric polymorhism / Generics
@@ -153,10 +154,10 @@ val select = Select("Favorite language?", List("scala", "haskell", "purescript")
 
 ```scala
 text.setLabel("foo")
-// res9: Input = Text(foo,20)
+// res10: Input = Text(foo,20)
 
 select.setLabel("foo")
-// res10: Input = Select(foo,List(scala, haskell, purescript))
+// res11: Input = Select(foo,List(scala, haskell, purescript))
 ```
 
 ---
@@ -324,13 +325,13 @@ val text = Text("What is your name?", maxLength = 20)
 // text: Text = Text(What is your name?,20)
 
 implicitly[Label[Text]].getLabel(text)
-// res21: String = What is your name?
-
-Label[Text].getLabel(text)
 // res22: String = What is your name?
 
+Label[Text].getLabel(text)
+// res23: String = What is your name?
+
 Label[Text].setLabel(text, "foo")
-// res23: Text = Text(foo,20)
+// res24: Text = Text(foo,20)
 ```
 
 ???
@@ -354,13 +355,13 @@ Syntax classes are generally located in:
 
 ```scala
 Label[Text].getLabel(text)
-// res24: String = What is your name?
-
-text.getLabel
 // res25: String = What is your name?
 
+text.getLabel
+// res26: String = What is your name?
+
 text.setLabel("foo")
-// res26: Text = Text(foo,20)
+// res27: Text = Text(foo,20)
 ```
 
 ???
@@ -462,10 +463,10 @@ import typeclass.std.option._
 
 ```scala
 5.combine(2)
-// res29: Int = 7
+// res30: Int = 7
 
 Option(5).combine(Option(2))
-// res30: Option[Int] = Some(7)
+// res31: Option[Int] = Some(7)
 ```
 
 ```scala
@@ -480,7 +481,7 @@ import typeclass.std.string._
 
 ```scala
 "Hello".combine(" World")
-// res32: String = Hello World
+// res33: String = Hello World
 ```
 
 ---
@@ -498,10 +499,10 @@ implicit val l: Long = 3L
 
 ```scala
 implicitly[Int]
-// res33: Int = 2
+// res34: Int = 2
 
 implicitly[Long]
-// res34: Long = 3
+// res35: Long = 3
 ```
 
 --
@@ -542,7 +543,7 @@ def plus3[A: Semigroup](a1: A, a2: A, a3: A): A =
 	
 ```scala
 plus3(1, 2, 3)
-// res38: Int = 6
+// res39: Int = 6
 ```
 ???
 - scope:
@@ -571,13 +572,13 @@ implicit class MyString2(s: String){
 
 ```scala
 "hello".isPalindrome
-// res40: Boolean = false
+// res41: Boolean = false
 
 "kayak".isPalindrome
-// res41: Boolean = true
+// res42: Boolean = true
 
 "lalalala".shout	 
-// res42: String = LALALALA
+// res43: String = LALALALA
 ```
 ???
 - essential for syntax	 
@@ -620,10 +621,10 @@ implicit val multSemigroup: Semigroup[Mult] = new Semigroup[Mult]{
 
 ```scala
 Mult(2).combine(Mult(5))
-// res46: Mult = Mult(10)
+// res47: Mult = Mult(10)
 
 2.combine(5)
-// res47: Int = 7
+// res48: Int = 7
 ```
 	 
 ---
@@ -639,16 +640,16 @@ case class Last[A](value: Option[A])
 	 
 ```scala
 Option(1).combine(Option(2))
-// res48: Option[Int] = Some(3)
+// res49: Option[Int] = Some(3)
 
 First(Option(1)).combine(First(Option(2)))
-// res49: typeclass.data.First[Int] = First(Some(1))
+// res50: typeclass.data.First[Int] = First(Some(1))
 
 Last(Option(1)).combine(Last(Option(2)))
-// res50: typeclass.data.Last[Int] = Last(Some(2))
+// res51: typeclass.data.Last[Int] = Last(Some(2))
 
 First(Option.empty[Int]).combine(First(Some(2)))
-// res51: typeclass.data.First[Int] = First(Some(2))
+// res52: typeclass.data.First[Int] = First(Some(2))
 ```
 	 
 1. Implement a `Semigroup` instance for `First`, `Last` in `typeclass.data`
@@ -689,13 +690,13 @@ import typeclass.std.list._
 
 ```scala
 List(1,2,3).ifEmpty("Hello")("World")
-// res52: String = World
+// res53: String = World
 
 0.ifEmpty(10)(5)
-// res53: Int = 10
+// res54: Int = 10
 
 Option.empty.isEmpty
-// res54: Boolean = true
+// res55: Boolean = true
 ```
 
 ???
@@ -1099,7 +1100,7 @@ import Semigroup.ops._
 
 ```scala
 Semigroup[String]	      
-// res5: Semigroup[String] = $anon$1@5ca976d1
+// res5: Semigroup[String] = $anon$1@7c2c7acd
 
 "Hello ".combine("World")
 // res6: String = Hello World

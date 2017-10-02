@@ -87,9 +87,10 @@ Repository is on github `julien-truffaut/Typeclass`
 # Ad hoc polymorphism?
 
 ```tut:silent
+def plus(a1: Int, a2: Int): Int = ???
+def plus(a1: Long, a2: Long): Long = ???
+
 def plus[A](a1: A, a2: A): A = ???
-def plus[A](a1: Int, a2: Int): Int = ???
-def plus[A](a1: Long, a2: Long): Long = ???
 ```
 
 ```tut:book
